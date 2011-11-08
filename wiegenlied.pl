@@ -1,5 +1,6 @@
 notation((1, 1, g), (a, 1), 8).
-notation((1, 1, g), (f, 1), 4).
+% notation((1, 1, g), (f, 1), 4). FIXME ulehčení pro první verzi
+notation((1, 1, g), (f, 1), 8).
 notation((1, 2, g), (bes, 1), 8).
 notation((1, 3, g), (a, 1), 8).
 notation((1, 3, g), (f, 1), 8).
@@ -23,7 +24,7 @@ notation((3, 4, g), (bes, 1), 8).
 notation((3, 4, g), (d, 1), 8).
 notation((3, 5, g), (c, 2), 8).
 notation((3, 5, g), (f, 1), 8).
-notation((3, 5, g), (d, 2), 8).
+notation((3, 6, g), (d, 2), 8).
 notation((3, 6, g), (f, 1), 8).
 notation((4, 1, g), (c, 2), 4).
 notation((4, 1, g), (f, 1), 4).
@@ -39,12 +40,12 @@ notation((5, 3, g), (g, 1), 8).
 notation((5, 3, g), (e, 1), 8).
 notation((5, 4, g), (g, 1), 8).
 notation((5, 4, g), (e, 1), 8).
-notation((5, 5, g), (f, 1), 8).
-notation((5, 5, g), (d, 1), 8).
+notation((5, 5, g), (fis, 1), 8).
+notation((5, 5, g), (dis, 1), 8).
 notation((5, 6, g), (g, 1), 8).
 notation((5, 6, g), (e, 1), 8).
 notation((6, 1, g), (bes, 1), [4, 8, 4]).
-notation((6, 1, g), (g, 1), [8, 16, 8]).
+notation((6, 1, g), (g, 1), [4, 8, 4]).
 notation((6, 6, g), r, 8).
 notation((7, 1, g), (a, 1), 8).
 notation((7, 1, g), (f, 1), 8).
@@ -109,7 +110,7 @@ notation((12, 6, g), r, 8).
 
 notation((13, 1, g), (bes, 1), 8).
 notation((13, 1, g), (g, 1), 8).
-notation((13, 2, g), (c, 1), 8).
+notation((13, 2, g), (c, 2), 8).
 notation((13, 2, g), (a, 1), 8).
 notation((13, 3, g), (bes, 1), 8).
 notation((13, 3, g), (g, 1), 8).
@@ -137,9 +138,11 @@ notation((15, 6, g), (e, 1), 8).
 notation((16, 1, g), (f, 1), [4, 8, 4]).
 notation((16, 1, g), (c, 1), [4, 8, 4]).
 notation((16, 1, g), (a, 0), [4, 8, 4]).
+notation((16, 6, g), r, 8).
 
 
-notation((1, 1, f), (f, 0), 4).
+%notation((1, 1, f), (f, 0), 4). FIXME ulehčení pro první verzi
+notation((1, 1, f), (f, 0), 8).
 notation((1, 1, f), (c, 1), 8).
 notation((1, 2, f), (d, 1), 8).
 notation((1, 3, f), (f, 0), 8).
@@ -164,7 +167,8 @@ notation((3, 4, f), (f, 0), 8).
 notation((3, 4, f), (bes, 0), 8).
 notation((3, 5, f), (d, 1), 8).
 notation((3, 6, f), (d, 1), 8).
-notation((4, Beat, f), Pitch, Length) :- notation((2, Beat, f), Pitch, Length).
+notation((4, Beat, f), Pitch, Duration) :-
+	notation((2, Beat, f), Pitch, Duration).
 
 notation((5, 1, f), (c, 0), 4).
 notation((5, 3, f), (c, 1), 8).
@@ -193,14 +197,16 @@ notation((9, 3, f), (bes, 0), 8).
 notation((9, 4, f), (bes, -1), 8).
 notation((9, 5, f), (bes, 0), 8).
 notation((9, 6, f), (bes, 0), 8).
-notation((10, Beat, f), Pitch, Length) :- notation((9, Beat, f), Pitch, Length).
+notation((10, Beat, f), Pitch, Duration) :-
+	notation((9, Beat, f), Pitch, Duration).
 notation((11, 1, f), (f, -1), 8).
 notation((11, 2, f), (f, 0), 8).
 notation((11, 3, f), (f, 0), 8).
 notation((11, 4, f), (f, -1), 8).
 notation((11, 5, f), (f, 0), 8).
 notation((11, 6, f), (f, 0), 8).
-notation((12, Beat, f), Pitch, Length) :- notation((11, Beat, f), Pitch, Length).
+notation((12, Beat, f), Pitch, Duration) :-
+	notation((11, Beat, f), Pitch, Duration).
 
 notation((13, 1, f), (e, 0), 4).
 notation((13, 1, f), (c, 1), 4).
