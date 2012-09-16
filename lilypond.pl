@@ -1,25 +1,52 @@
+/** <module> Lilypond export
+*/
+:- module(lilypond, [
+	aux/0
+	]).
+
+%% chord(+Start, ?Chord, +Duration)
+% True if Chord consisting of _Pitches_, length as Duration starts at Start.
+%
+% @param Chord (?_Pitches_, Duration)
 chord(Start, (Pitches, Duration), Duration) :-
 	findall(Pitch, notation(Start, Pitch, Duration), Pitches).
+
+%% chords(+Start, ?Chords)
+% True if Chords (and nothing else) start at Start.
 chords(Start, Chords) :-
 	findall(Duration, notation(Start, _, Duration), Durs1),
 	sort(Durs1, Durs2),
 	maplist(chord(Start), Chords, Durs2).
-% neúplné - chybí vynechané doby
+
+%% allBeats(+Staff, ?Beats)
+% True if Staff contains music elements at Beats (sorted).
+%
+% @tbd All Beats (including exceeded) should be included.
 allBeats(Staff, Beats) :-
 	findall((Bar, Beat, Staff), notation((Bar, Beat, Staff), _, _), Starts),
 	predsort(posCmp, Starts, Beats).
+
+%% staffLine(+Staff, ?Line)
+% True if Staff contains music elements Line.
 staffLine(Staff, Line) :-
 	allBeats(Staff, Beats),
 	maplist(chords, Beats, Chords1),
 	flatten(Chords1, Chords2),
 	Line = Chords2.
 
+%% pitchLily(+Tone, ?Lily)
+% True if Tone is represented by Lily string.
+%
+% @param Tone _|(Pitch, Octave)|_
 pitchLily((Pitch, Octave), Lily) :- once((
 	Octave > 0, Octave2 is Octave - 1, pitchLily((Pitch, Octave2), Lily2),
 		concat(Lily2, '\'', Lily);
 	Octave < 0, Octave2 is Octave + 1, pitchLily((Pitch, Octave2), Lily2),
 		concat(Lily2, ',', Lily);
 	Lily = Pitch)).
+
+%% chordLily(+Chord, ?ChordLily)
+% True if Chord is represented by ChordLily string.
 chordLily(Chord, ChordLily) :- once((
 	Chord = (Pitches, Duration),
 	maplist(pitchLily, Pitches, Pitches2),
@@ -31,10 +58,22 @@ chordLily(Chord, ChordLily) :- once((
 		Duration = [Dur1 | DurR], chordLily((Pitches, DurR), ChordRLily),
 		atomic_list_concat([Str, Dur1, ' ~', ChordRLily], ChordLily))
 	)).
+
+%% restLily(+Rest, ?RestLily)
+% True if Rest is represented by RestLily string.
+%
+% @param Rest _|(|_=r=_|, Duration)|_ or _|(|_=|[r]|=_|, Duration)|_
 restLily((r, Duration), RestLily) :- concat('r', Duration, RestLily), !.
 restLily(([r], Duration), RestLily) :- concat('r', Duration, RestLily), !.
+
+%% itemLily(+Item, ?ItemLily)
+% True if music element Item is represented by ItemLily string.
+%
+% @param Item chord or rest
 itemLily(Item, ItemLily) :- chordLily(Item, ItemLily); restLily(Item, ItemLily).
 
+%% aux
+% Predicate for exporting Wiegenlied into LilyPond file.
 aux :-
 	open('wiegenlied.ly', write, File),
 	write(File, '\\version "2.14.2"\n'),
@@ -53,6 +92,8 @@ aux :-
 	write(File, '\\score { \\new PianoStaff << \\new Staff \\horni \\new Staff \\spodni >> \\layout { } \\midi { } }\n'),
 	close(File), !.
 
+%% posCmp(?Delta, +Time1, +Time2)
+% True if Time1 compared to Time2 is Delta.
 posCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :- once((
 	Bar1 < Bar2, Delta = <;
 	Bar1 > Bar2, Delta = >;
