@@ -1,3 +1,12 @@
+:- module(theory, [
+	toneFromScale/2,
+	chordFromScale/2,
+	timeDiff/3,
+	durationToBeats/2,
+	toneAtTime/2,
+	chordAtTime/2
+	]).
+
 /** <module> Music theory
 
 This module covers music theory relations.
@@ -9,14 +18,7 @@ $ Scale : _|(root, interval pattern)|_, e.g. =|(fis, major)|=
 $ Time : _|(measure, beat)|_ or _|(measure, beat, _)|_, e.g. =|(10, 2)|=
 $ Beats : _|beats|_, e.g. 3
 */
-:- module(theory, [
-	toneFromScale/2,
-	chordFromScale/2,
-	timeDiff/3,
-	durationToBeats/2,
-	toneAtTime/2,
-	chordAtTime/2
-	]).
+
 
 %% rest(?Rest)
 % True if Rest stands for a rest in notation.

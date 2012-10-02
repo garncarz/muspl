@@ -1,8 +1,10 @@
-/** <module> Lilypond export
-*/
 :- module(lilypond, [
 	aux/0
 	]).
+
+/** <module> Lilypond export
+*/
+
 
 %% chord(+Start, ?Chord, +Duration)
 % True if Chord consisting of _Pitches_, length as Duration starts at Start.
