@@ -29,7 +29,7 @@ allBeats(Staff, Beats) :-
 	predsort(posCmp, Starts, Beats).
 
 %% staffLine(+Staff, ?Line)
-% True if Staff contains music elements Line.
+% True if Staff is made of music elements Line.
 staffLine(Staff, Line) :-
 	allBeats(Staff, Beats),
 	maplist(chords, Beats, Chords1),
