@@ -19,6 +19,7 @@ $ Time : _|(measure, beat)|_ or _|(measure, beat, _)|_, e.g. =|(10, 2)|=
 $ Beats : _|beats|_, e.g. 3
 */
 
+:- dynamic notation/3, timeSignature/2.
 
 %% rest(?Rest)
 % True if Rest stands for a rest in notation.
@@ -41,6 +42,8 @@ toneFromScale(Tone, Scale) :-
 %% chordFromScale(+Chord, ?Scale)
 % True if Chord is from Scale.
 chordFromScale(Chord, Scale) :-
+	length(Chord, Length), Length > 0,
+	scale(Scale, _),
 	forall(member(Tone, Chord), toneFromScale(Tone, Scale)).
 
 
@@ -81,10 +84,4 @@ toneAtTime(Tone, Time) :-
 % True if Chord (and no more tones) sound at Time.
 chordAtTime(Chord, Time) :-
 	findall(Tone, toneAtTime(Tone, Time), Chord).
-
-:- begin_tests(theory).
-test(toneFromScale) :-
-	toneFromScale(g, (c, major)),
-	not(toneFromScale(eis, (c, major))).
-:- end_tests(theory).
 
