@@ -1,4 +1,7 @@
 :- module(theory, [
+	notation/3,
+	timeSignature/2,
+
 	toneFromScale/2,
 	chordFromScale/2,
 	timeDiff/3,
@@ -19,7 +22,9 @@ $ Time : _|(measure, beat)|_ or _|(measure, beat, _)|_, e.g. =|(10, 2)|=
 $ Beats : _|beats|_, e.g. 3
 */
 
-:- dynamic notation/3, timeSignature/2.
+:- dynamic
+	notation/3,
+	timeSignature/2.
 
 %% rest(?Rest)
 % True if Rest stands for a rest in notation.
@@ -52,7 +57,7 @@ chordFromScale(Chord, Scale) :-
 timeDiff(Time1, Time2, Diff) :-
 	once((Time1 = (Measure1, Beat1, _); Time1 = (Measure1, Beat1))),
 	once((Time2 = (Measure2, Beat2, _); Time2 = (Measure2, Beat2))),
-	timeSignature(BeatsPerMeasure, _),
+	once(timeSignature(BeatsPerMeasure, _)),
 	Diff is (Measure2 - Measure1) * BeatsPerMeasure + Beat2 - Beat1.
 
 
