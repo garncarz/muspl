@@ -3,6 +3,7 @@
 /** <module> Lilypond export
 */
 
+:- use_module(data).
 
 %% chord(+Start, ?Chord, +Duration)
 % True if Chord consisting of _Pitches_, length as Duration starts at Start.

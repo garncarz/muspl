@@ -1,7 +1,4 @@
 :- module(theory, [
-	notation/3,
-	timeSignature/2,
-
 	toneFromScale/2,
 	chordFromScale/2,
 	timeDiff/3,
@@ -22,9 +19,7 @@ $ Time : _|(measure, beat)|_ or _|(measure, beat, _)|_, e.g. =|(10, 2)|=
 $ Beats : _|beats|_, e.g. 3
 */
 
-:- dynamic
-	notation/3,
-	timeSignature/2.
+:- use_module(data).
 
 %% rest(?Rest)
 % True if Rest stands for a rest in notation.

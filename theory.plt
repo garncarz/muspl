@@ -1,5 +1,6 @@
 :- begin_tests(theory, [setup(clear), cleanup(clear)]).
 
+:- use_module(data).
 :- use_module(theory).
 
 clear :-
