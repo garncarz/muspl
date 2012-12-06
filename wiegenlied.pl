@@ -1,3 +1,5 @@
+notationScale((f, major)).
+
 timeSignature(6, 8).
 % timeSignature(0, 6, 8). FIXME od jakého času platí
 

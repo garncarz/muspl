@@ -1,6 +1,4 @@
-:- module(lilypond, [
-	aux/0
-	]).
+:- module(lilypond, [export/1]).
 
 /** <module> Lilypond export
 */
@@ -74,24 +72,36 @@ restLily(([r], Duration), RestLily) :- concat('r', Duration, RestLily), !.
 % @param Item chord or rest
 itemLily(Item, ItemLily) :- chordLily(Item, ItemLily); restLily(Item, ItemLily).
 
-%% aux
-% Predicate for exporting Wiegenlied into LilyPond file.
-aux :-
-	open('wiegenlied.ly', write, File),
-	write(File, '\\version "2.14.2"\n'),
-	staffLine(g, LineG1),
-	maplist(itemLily, LineG1, LineG2),
-	atomic_list_concat(LineG2, ' ', LineG),
-	write(File, 'horni = { \\clef treble \\key f \\major \\time 6/8\n'),
-	write(File, LineG),
-	write(File, '\n}\n\n'),
-	staffLine(f, LineF1),
-	maplist(itemLily, LineF1, LineF2),
-	atomic_list_concat(LineF2, ' ', LineF),
-	write(File, 'spodni = { \\clef bass \\key f \\major \\time 6/8\n'),
-	write(File, LineF),
-	write(File, '\n}\n\n'),
-	write(File, '\\score { \\new PianoStaff << \\new Staff \\horni \\new Staff \\spodni >> \\layout { } \\midi { } }\n'),
+%% staffLily(+Staff, -String)
+% Renders a staff line into a complete Lilypond line.
+%
+% @param Staff Possible values: =g= or =f=
+staffLily(Staff, String) :-
+	notationScale((Root, IntervalPattern)),
+	timeSignature(BeatsInBar, BeatUnit),
+	(Staff == 'g', Clef = 'treble';
+		Staff == 'f', Clef = 'bass'),
+	atomic_list_concat(['staff', Staff, ' = { \\clef ', Clef, ' \\key ',
+		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
+		'\n'], '', Header),
+	
+	staffLine(Staff, StaffLine),
+	maplist(itemLily, StaffLine, LilyItems),
+	atomic_list_concat(LilyItems, ' ', LilyLine),
+	
+	atomic_list_concat([Header, LilyLine, '\n}\n\n'], '', String).
+
+%% export(+Filename)
+% Exports notation into a Lilypond file.
+export(Filename) :-
+	open(Filename, write, File),
+	write(File, '\\version "2.16.1"\n\n'),
+	staffLily(g, StaffG),
+	write(File, StaffG),
+	staffLily(f, StaffF),
+	write(File, StaffF),
+	write(File, '\\score { \\new PianoStaff << \\new Staff \\staffg '),
+	write(File, '\\new Staff \\stafff >> \\layout { } \\midi { } }\n'),
 	close(File), !.
 
 %% posCmp(?Delta, +Time1, +Time2)
