@@ -25,6 +25,7 @@ $ Beats : _|beats|_, e.g. =3=
 $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
 */
 
+:- use_module(aux).
 :- use_module(data).
 
 %% rest(-Rest)
@@ -58,12 +59,6 @@ scaleTone(Scale, Tone, 1) :-
 	toneFromScale(Tone, Scale), !.
 scaleTone(Scale, Tone, 0) :-
 	scale(Scale, _), not(toneFromScale(Tone, Scale)), !.
-
-
-avg_list(List, Avg) :-
-	length(List, Len), Len > 0,
-	sum_list(List, Sum),
-	Avg is Sum / Len.
 
 scaleChord(Scale, Chord, Fuzzy) :-
 	scale(Scale, _),
