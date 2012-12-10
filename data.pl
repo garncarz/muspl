@@ -3,6 +3,7 @@
 	timeSignature/2,
 	notationScale/1,
 	
+	loadData/1,
 	clearData,
 	
 	allBeats/2,
@@ -15,6 +16,10 @@
 	notation/3,
 	timeSignature/2,
 	notationScale/1.
+
+loadData(Name) :-
+	string_concat('data/', Name, Filename),
+	consult(Filename).
 
 clearData :-
 	retractall(notation(_, _, _)),
@@ -45,7 +50,4 @@ posCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :-
 	Beat1 < Beat2, Delta = <;
 	Beat1 > Beat2, Delta = >;
 	Delta = =)).
-
-
-:- [wiegenlied].
 
