@@ -5,29 +5,21 @@
 
 :- use_module(data).
 
-%% chord(+Start, ?Chord, +Duration)
+%% chord(+Start, -Chord, +Duration)
 % True if Chord consisting of _Pitches_, length as Duration starts at Start.
 %
-% @param Chord (?_Pitches_, Duration)
+% @param Chord (-_Pitches_, Duration)
 chord(Start, (Pitches, Duration), Duration) :-
 	findall(Pitch, notation(Start, Pitch, Duration), Pitches).
 
-%% chords(+Start, ?Chords)
+%% chords(+Start, -Chords)
 % True if Chords (and nothing else) start at Start.
 chords(Start, Chords) :-
 	findall(Duration, notation(Start, _, Duration), Durs1),
 	sort(Durs1, Durs2),
 	maplist(chord(Start), Chords, Durs2).
 
-%% allBeats(+Staff, ?Beats)
-% True if Staff contains music elements at Beats (sorted).
-%
-% @tbd All Beats (including exceeded) should be included.
-allBeats(Staff, Beats) :-
-	findall((Bar, Beat, Staff), notation((Bar, Beat, Staff), _, _), Starts),
-	predsort(posCmp, Starts, Beats).
-
-%% staffLine(+Staff, ?Line)
+%% staffLine(+Staff, -Line)
 % True if Staff is made of music elements Line.
 staffLine(Staff, Line) :-
 	allBeats(Staff, Beats),
@@ -35,7 +27,7 @@ staffLine(Staff, Line) :-
 	flatten(Chords1, Chords2),
 	Line = Chords2.
 
-%% pitchLily(+Tone, ?Lily)
+%% pitchLily(+Tone, -Lily)
 % True if Tone is represented by Lily string.
 %
 % @param Tone _|(Pitch, Octave)|_
@@ -46,7 +38,7 @@ pitchLily((Pitch, Octave), Lily) :- once((
 		concat(Lily2, ',', Lily);
 	Lily = Pitch)).
 
-%% chordLily(+Chord, ?ChordLily)
+%% chordLily(+Chord, -ChordLily)
 % True if Chord is represented by ChordLily string.
 chordLily(Chord, ChordLily) :- once((
 	Chord = (Pitches, Duration),
@@ -60,20 +52,20 @@ chordLily(Chord, ChordLily) :- once((
 		atomic_list_concat([Str, Dur1, ' ~', ChordRLily], ChordLily))
 	)).
 
-%% restLily(+Rest, ?RestLily)
+%% restLily(+Rest, -RestLily)
 % True if Rest is represented by RestLily string.
 %
 % @param Rest _|(|_=r=_|, Duration)|_ or _|(|_=|[r]|=_|, Duration)|_
 restLily((r, Duration), RestLily) :- concat('r', Duration, RestLily), !.
 restLily(([r], Duration), RestLily) :- concat('r', Duration, RestLily), !.
 
-%% itemLily(+Item, ?ItemLily)
+%% itemLily(+Item, -ItemLily)
 % True if music element Item is represented by ItemLily string.
 %
 % @param Item chord or rest
 itemLily(Item, ItemLily) :- chordLily(Item, ItemLily); restLily(Item, ItemLily).
 
-%% staffLily(+Staff, -String)
+%% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
 %
 % @param Staff Possible values: =g= or =f=
@@ -105,23 +97,8 @@ export(Filename) :-
 	write(File, '\\new Staff \\stafff >> \\layout { } \\midi { } }\n'),
 	close(File), !.
 
-%% posCmp(?Delta, +Time1, +Time2)
-% True if Time1 compared to Time2 is Delta.
-posCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :- once((
-	Bar1 < Bar2, Delta = <;
-	Bar1 > Bar2, Delta = >;
-	Beat1 < Beat2, Delta = <;
-	Beat1 > Beat2, Delta = >;
-	Delta = =)).
-
 
 :- begin_tests(lilypond).
-test(posCmp) :-
-	posCmp('<', (3, 2, g), (4, 1, g)),
-	posCmp('=', (10, 3, g), (10, 3, g)),
-	posCmp('>', (3, 2, g), (2, 5, g)).
-test(posCmpFail, [fail]) :-
-	posCmp(_, (1, 1, g), (1, 1, f)).
 test(pitchLily) :-
 	pitchLily((des, 2), L1), L1 = 'des\'\'',
 	pitchLily((cis, 0), L2), L2 = 'cis',

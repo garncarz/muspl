@@ -3,9 +3,7 @@
 :- use_module(data).
 :- use_module(theory).
 
-clear :-
-	retractall(timeSignature(_, _)),
-	retractall(notation(_, _, _)).
+clear :- clearData.
 
 ts34 :-
 	assertz(timeSignature(3, 4)).
@@ -46,9 +44,21 @@ test(toneFromScale, [nondet]) :-
 	toneFromScale(bes, Scale), Scale == (d, minor),
 	not(toneFromScale(eis, (c, major))).
 
-test(chordFromScale) :-
+test(chordFromScale, [nondet]) :-
 	chordFromScale([e, (g, 1), (c, -1)], Scale), Scale == (d, minor),
 	not(chordFromScale([eig, g], (c, major))).
+
+
+test(scaleTone) :-
+	scaleTone(Scale1, (b, 2), 1), Scale1 == (c, major),
+	scaleTone(Scale2, (b, 2), 0), Scale2 == (d, minor),
+	not(scaleTone((c, major), (b, 2), 0)).
+
+test(scaleChord, [nondet]) :-
+	scaleChord(Scale1, [c, d, e], 1), Scale1 == (c, major),
+	scaleChord(Scale2, [c, d, eis, f], 0.75), Scale2 == (d, minor),
+	not(scaleChord((c, major), [d, bes], 1)).
+
 
 test(timeDiff1, [setup(ts34), cleanup(clear)]) :-
 	timeDiff((10, 2), (9, 1), Diff), Diff == -4.

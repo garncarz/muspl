@@ -1,5 +1,6 @@
 #!/usr/bin/swipl -f
 
 :- doc_server(4000, [edit(false)]).
-:- [theory, lilypond].
+:- [data, theory, lilypond].
+:- load_test_files([]).
 
