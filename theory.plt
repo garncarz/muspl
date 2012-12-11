@@ -48,7 +48,7 @@ test(chordFromScale, [nondet]) :-
 	not(chordFromScale([eig, g], (c, major))).
 
 
-test(scaleTone) :-
+test(scaleTone, [nondet]) :-
 	scaleTone(Scale1, (b, 2), 1), Scale1 == (c, major),
 	scaleTone(Scale2, (b, 2), 0), Scale2 == (d, minor),
 	not(scaleTone((c, major), (b, 2), 0)).

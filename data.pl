@@ -18,6 +18,7 @@
 	notationScale/1.
 
 loadData(Name) :-
+	clearData,
 	string_concat('data/', Name, Filename),
 	consult(Filename).
 
