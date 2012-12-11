@@ -27,16 +27,16 @@ clearData :-
 	retractall(timeSignature(_, _)),
 	retractall(notationScale(_)).
 
-%% allBeats(+Staff, -Beats)
-% True if Staff contains music elements at Beats (sorted).
+%% allBeats(-Beats).
+%% allBeats(+Staff, -Beats).
+% True if notation/Staff contains music elements at Beats (sorted).
 %
 % @tbd All Beats (including exceeded) should be included.
-allBeats(Staff, Beats) :-
-	findall((Bar, Beat, Staff), notation((Bar, Beat, Staff), _, _), Starts),
-	predsort(timeCmp, Starts, Beats).
-
 allBeats(Beats) :-
 	findall((Bar, Beat), notation((Bar, Beat, _), _, _), Starts),
+	predsort(timeCmp, Starts, Beats).
+allBeats(Staff, Beats) :-
+	findall((Bar, Beat, Staff), notation((Bar, Beat, Staff), _, _), Starts),
 	predsort(timeCmp, Starts, Beats).
 
 %% timeCmp(-Delta, +Time1, +Time2)
@@ -45,5 +45,5 @@ timeCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :-
 	timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)), !.
 timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :- number(Beat1), number(Beat2),
 	(compare(Delta, Bar1, Bar2), Delta \= =;
-		compare(Delta, Beat1, Beat2)).
+		compare(Delta, Beat1, Beat2)), !.
 

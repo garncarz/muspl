@@ -104,10 +104,10 @@ scaleSong(Scale, Fuzzy) :-
 	avg_list(ChordFuzzies, Fuzzy).
 
 fuzzyScaleCmp(Delta, ((Root1, Intervals1), Fuzzy1),
-	((Root2, Intervals2), Fuzzy2)) :-
+	((Root2, Intervals2), Fuzzy2)) :- once((
 	compare(Delta, Fuzzy1, Fuzzy2), Delta \= =;
 	compare(Delta, Root1, Root2), Delta \= =;
-	compare(Delta, Intervals1, Intervals2).
+	compare(Delta, Intervals1, Intervals2))).
 
 sortedSongScales(Scales) :-
 	findall((Scale, Fuzzy), scaleSong(Scale, Fuzzy), L1),
