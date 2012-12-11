@@ -6,6 +6,8 @@
 	scaleChord/3,
 	scaleSong/2,
 	
+	sortedSongScales/1,
+	
 	timeDiff/3,
 	durationToBeats/2,
 	toneAtTime/2,
@@ -44,7 +46,7 @@ scale((bes, major), [bes, c, d, es, f, g, a]).
 scale((f, major), [f, g, a, bes, c, d, e]).
 scale((c, major), [c, d, e, f, g, a, b]).
 scale((g, major), [g, a, b, c, d, e, fis]).
-scale((d, major), [d, e, fis, g, a, b, cis, d]).
+scale((d, major), [d, e, fis, g, a, b, cis]).
 scale((a, major), [a, b, cis, d, e, fis, gis]).
 scale((e, major), [e, fis, gis, a, b, cis, dis]).
 scale((b, major), [b, cis, dis, e, fis, gis, ais]).
@@ -100,6 +102,17 @@ scaleSong(Scale, Fuzzy) :-
 	maplist(chordAtTime, Chords, Beats),
 	maplist(scaleChord(Scale), Chords, ChordFuzzies),
 	avg_list(ChordFuzzies, Fuzzy).
+
+fuzzyScaleCmp(Delta, ((Root1, Intervals1), Fuzzy1),
+	((Root2, Intervals2), Fuzzy2)) :-
+	compare(Delta, Fuzzy1, Fuzzy2), Delta \= =;
+	compare(Delta, Root1, Root2), Delta \= =;
+	compare(Delta, Intervals1, Intervals2).
+
+sortedSongScales(Scales) :-
+	findall((Scale, Fuzzy), scaleSong(Scale, Fuzzy), L1),
+	predsort(fuzzyScaleCmp, L1, L2),
+	reverse(L2, Scales).
 
 
 %% timeDiff(+Time1, +Time2, -Diff)

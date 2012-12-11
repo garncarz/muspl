@@ -9,7 +9,7 @@
 	allBeats/2,
 	allBeats/1,
 	
-	posCmp/3
+	timeCmp/3
 	]).
 
 :- dynamic
@@ -33,22 +33,17 @@ clearData :-
 % @tbd All Beats (including exceeded) should be included.
 allBeats(Staff, Beats) :-
 	findall((Bar, Beat, Staff), notation((Bar, Beat, Staff), _, _), Starts),
-	predsort(posCmp, Starts, Beats).
+	predsort(timeCmp, Starts, Beats).
 
 allBeats(Beats) :-
 	findall((Bar, Beat), notation((Bar, Beat, _), _, _), Starts),
-	predsort(posCmp, Starts, Beats).
+	predsort(timeCmp, Starts, Beats).
 
-%% posCmp(-Delta, +Time1, +Time2)
+%% timeCmp(-Delta, +Time1, +Time2)
 % True if Time1 compared to Time2 is Delta.
-posCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :-
-	posCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)), !.
-
-posCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :-
-	number(Beat1), number(Beat2), once((
-	Bar1 < Bar2, Delta = <;
-	Bar1 > Bar2, Delta = >;
-	Beat1 < Beat2, Delta = <;
-	Beat1 > Beat2, Delta = >;
-	Delta = =)).
+timeCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :-
+	timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)), !.
+timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :- number(Beat1), number(Beat2),
+	(compare(Delta, Bar1, Bar2), Delta \= =;
+		compare(Delta, Beat1, Beat2)).
 
