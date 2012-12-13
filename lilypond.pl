@@ -99,15 +99,19 @@ export(Filename) :-
 
 
 :- begin_tests(lilypond).
+
 test(pitchLily) :-
-	pitchLily((des, 2), L1), L1 = 'des\'\'',
-	pitchLily((cis, 0), L2), L2 = 'cis',
-	pitchLily((a, -1), L3), L3 = 'a,'.
+	pitchLily((des, 2), L1), L1 == 'des\'\'',
+	pitchLily((cis, 0), L2), L2 == 'cis',
+	pitchLily((a, -1), L3), L3 == 'a,'.
+
 test(chordLily) :-
-	chordLily(([(a, 1), (f, 1)], 8), C1), C1 = '<a\' f\'>8',
-	chordLily(([(a, 1)], 4), C2), C2 = 'a\'4'.
+	chordLily(([(a, 1), (f, 1)], 8), C1), C1 == '<a\' f\'>8',
+	chordLily(([(a, 1)], 4), C2), C2 == 'a\'4'.
+
 test(restLily) :-
-	restLily((r, 2), R1), R1 = 'r2',
-	restLily(([r], 4), R2), R2 = 'r4'.
+	restLily((r, 2), R1), R1 == 'r2',
+	restLily(([r], 4), R2), R2 == 'r4'.
+
 :- end_tests(lilypond).
 

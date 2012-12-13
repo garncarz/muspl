@@ -17,6 +17,8 @@
 	timeSignature/2,
 	notationScale/1.
 
+:- ['data.plt'].
+
 loadData(Name) :-
 	clearData,
 	string_concat('data/', Name, Filename),

@@ -1,7 +1,5 @@
 :- begin_tests(data).
 
-:- use_module(data).
-
 test(timeCmp1) :-
 	timeCmp(D1, (3, 2), (4, 1)), D1 == '<',
 	timeCmp(D2, (10, 3), (10, 3)), D2 == '=',

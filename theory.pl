@@ -33,6 +33,8 @@ $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
 :- use_module(aux).
 :- use_module(data).
 
+:- ['theory.plt'].
+
 %% rest(-Rest)
 % True if Rest stands for a rest in notation.
 rest(r).
@@ -173,8 +175,7 @@ allSongChords(Chords) :-
 % @tbd Determine scale for just a part of a song.
 scaleSong(Scale, Fuzzy) :-
 	scale(Scale, _),
-	allBeats(Beats),
-	maplist(chordAtTime, Chords, Beats),
+	allSongChords(Chords),
 	maplist(scaleChord(Scale), Chords, ChordFuzzies),
 	avg_list(ChordFuzzies, Fuzzy).
 
