@@ -33,6 +33,8 @@ $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
 :- use_module(aux).
 :- use_module(data).
 
+:- ['theory/intervals'].
+
 :- ['theory.plt'].
 
 %% rest(-Rest)
@@ -148,6 +150,13 @@ harmonicFuncChord(Scale, Func, Chord) :- is_list(Chord),
 	maplist(scaleAt(ScaleTones), FuncMembers, FuncChord),
 	sameChords(FuncChord, Chord).
 harmonicFuncChord(_, 0, _).
+
+
+%% symbolChord(Symbol, Chord)
+symbolChord((Root, major), [Root, Tone2, Tone3]) :-
+	intervalDiff(Root, Tone2, 4),
+	intervalDiff(Tone2, Tone3, 3).
+
 
 %% scaleTone(-Scale, +Tone, -Fuzzy)
 % Tone is from Scale with fuzziness Fuzzy.
