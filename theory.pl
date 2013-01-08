@@ -153,9 +153,26 @@ harmonicFuncChord(_, 0, _).
 
 
 %% symbolChord(Symbol, Chord)
+%
+%  @tbd Complete as much as possible. Fuzzy variants.
 symbolChord((Root, major), [Root, Tone2, Tone3]) :-
 	intervalDiff(Root, Tone2, 4),
 	intervalDiff(Tone2, Tone3, 3).
+symbolChord((Root, minor), [Root, Tone2, Tone3]) :-
+	intervalDiff(Root, Tone2, 3),
+	intervalDiff(Tone2, Tone3, 4).
+symbolChord((Root, augmented), [Root, Tone2, Tone3]) :-
+	intervalDiff(Root, Tone2, 4),
+	intervalDiff(Tone2, Tone3, 4).
+symbolChord((Root, diminished), [Root, Tone2, Tone3]) :-
+	intervalDiff(Root, Tone2, 3),
+	intervalDiff(Tone2, Tone3, 3).
+symbolChord((Root, sus2), [Root, Tone2, Tone3]) :-
+	intervalDiff(Root, Tone2, 2),
+	intervalDiff(Tone2, Tone3, 5).
+symbolChord((Root, sus4), [Root, Tone2, Tone3]) :-
+	intervalDiff(Root, Tone2, 5),
+	intervalDiff(Tone2, Tone3, 2).
 
 
 %% scaleTone(-Scale, +Tone, -Fuzzy)
