@@ -79,3 +79,7 @@ intervalDiff(Tone1, Tone2, Diff) :-
 	negInterval(Diff, Diff2),
 	intervalDiff(Tone2, Tone1, Diff2).
 
+intervalModDiff(Tone1, Tone2, Diff) :-
+	intervalDiff(Tone1, Tone2, Diff1),
+	Diff is Diff1 mod 12.
+
