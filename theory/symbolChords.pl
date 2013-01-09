@@ -43,5 +43,6 @@ symbolChordF((Root, Quality), Chord, Fuzzy) :-
 probSymbolChord(Sym, Chord) :-
 	findall((Fuzzy1 - Sym1), symbolChordF(Sym1, Chord, Fuzzy1), FuzzyBag),
 	keysort(FuzzyBag, Sorted),
-	Sorted = [(_ - Sym) | _].
+	last(Sorted, (Fuzzy - Sym1)),
+	(Fuzzy >= 0.75, symbolChordBaseName(Sym1, Sym); Sym = r).
 

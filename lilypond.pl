@@ -4,6 +4,7 @@
 */
 
 :- use_module(data).
+:- use_module(theory).
 
 %% chord(+Start, -Chord, +Duration)
 % True if Chord consisting of _Pitches_, length as Duration starts at Start.
@@ -84,17 +85,54 @@ staffLily(Staff, String) :-
 	
 	atomic_list_concat([Header, LilyLine, '\n}\n\n'], '', String).
 
+% @tbd empty chord, chord's duration
+chordSymLily(Chord, ChordLily) :-
+	Duration = 8,
+
+	probSymbolChord(Sym, Chord),
+	(Sym == r, ChordLily = 'r8';
+	
+	Sym = (Root, Quality),
+	(Quality == major, LilQ = '5';
+		Quality == minor, LilQ = 'm';
+		Quality == augmented, LilQ = 'aug';
+		Quality == diminished, LilQ = 'dim';
+		LilQ = Quality), !,
+	
+	(number(Duration),
+		atomic_list_concat([Root, Duration, ':', LilQ], ChordLily);
+		Duration = [Dur1],
+			atomic_list_concat([Root, Dur1, ':', LilQ], ChordLily);
+		Duration = [Dur1 | DurR], chordSymLily((_Pitches, DurR), ChordRLily),
+			atomic_list_concat([Root, Dur1, ':', LilQ, ' ~', ChordRLily],
+				ChordLily)
+	)), !.
+chordSymLily(_Chord, '').
+	
+symbolChordsLily(String) :-
+	allSongChords(Chords),
+	maplist(chordSymLily, Chords, Lilies),
+	atomic_list_concat(Lilies, ' ', LiliesStr),
+	atomic_list_concat(['symChords = \\chordmode { ', LiliesStr, ' }\n\n'],
+		String).
+
 %% export(+Filename)
 % Exports notation into a Lilypond file.
 export(Filename) :-
 	open(Filename, write, File),
 	write(File, '\\version "2.16.1"\n\n'),
+	symbolChordsLily(SymChords),
+	write(File, SymChords),
 	staffLily(g, StaffG),
 	write(File, StaffG),
 	staffLily(f, StaffF),
 	write(File, StaffF),
-	write(File, '\\score { \\new PianoStaff << \\new Staff \\staffg '),
-	write(File, '\\new Staff \\stafff >> \\layout { } \\midi { } }\n'),
+	write(File, '\\score { <<\n'),
+	write(File, '\\new ChordNames \\symChords\n'),
+	write(File, '\\new PianoStaff << '),
+	write(File, '\\new Staff \\staffg '),
+	write(File, '\\new Staff \\stafff >>'),
+	write(File, '\n>>\n\\layout { }\n\\midi { }\n}\n'),
 	close(File), !.
 
 

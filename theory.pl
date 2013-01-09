@@ -13,7 +13,9 @@
 	timeDiff/3,
 	durationToBeats/2,
 	toneAtTime/2,
-	chordAtTime/2
+	chordAtTime/2,
+	
+	probSymbolChord/2
 	]).
 
 /** <module> Music theory
