@@ -86,6 +86,31 @@ staffLily(Staff, String) :-
 	atomic_list_concat([Header, LilyLine, '\n}\n\n'], '', String).
 
 % @tbd empty chord, chord's duration
+dbChordQLily(major, 5).
+dbChordQLily(minor, m).
+dbChordQLily(augmented, aug).
+dbChordQLily(diminished, dim).
+dbChordQLily(major7, maj7).
+dbChordQLily(minor7, m7).
+dbChordQLily(majorMinor7, 7).
+dbChordQLily(diminished7, dim7).
+dbChordQLily(augmented7, aug7).
+dbChordQLily(halfDiminished7, 'm7.5-').
+dbChordQLily(minorMajor7, 'maj7.5-').
+dbChordQLily(major6, 6).
+dbChordQLily(minor6, m6).
+dbChordQLily(dominant9, 9).
+dbChordQLily(major9, maj9).
+dbChordQLily(minor9, m9).
+dbChordQLily(dominant11, 11).
+dbChordQLily(major11, maj11).
+dbChordQLily(minor11, m11).
+dbChordQLily(dom9maj13, 13).
+dbChordQLily(dom11maj13, '13.11').
+dbChordQLily(major13, 'maj13.11').
+dbChordQLily(minor13, 'm13.11').
+dbChordQLily(Quality, Quality).
+
 chordSymLily(Chord, ChordLily) :-
 	Duration = 8,
 
@@ -93,11 +118,7 @@ chordSymLily(Chord, ChordLily) :-
 	(Sym == r, ChordLily = 'r8';
 	
 	Sym = (Root, Quality),
-	(Quality == major, LilQ = '5';
-		Quality == minor, LilQ = 'm';
-		Quality == augmented, LilQ = 'aug';
-		Quality == diminished, LilQ = 'dim';
-		LilQ = Quality), !,
+	dbChordQLily(Quality, LilQ), !,
 	
 	(number(Duration),
 		atomic_list_concat([Root, Duration, ':', LilQ], ChordLily);

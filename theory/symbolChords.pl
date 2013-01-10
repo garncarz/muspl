@@ -7,6 +7,31 @@ dbSymbolIntervals(diminished, [0, 3, 6]).
 dbSymbolIntervals(sus2, [0, 2, 7]).
 dbSymbolIntervals(sus4, [0, 5, 7]).
 
+dbSymbolIntervals(major7, [0, 4, 7, 11]).
+dbSymbolIntervals(minor7, [0, 3, 7, 10]).
+dbSymbolIntervals(majorMinor7, [0, 4, 7, 10]).
+dbSymbolIntervals(diminished7, [0, 3, 6, 9]).
+dbSymbolIntervals(augmented7, [0, 4, 8, 10]).
+dbSymbolIntervals(halfDiminished7, [0, 3, 6, 10]).
+dbSymbolIntervals(minorMajor7, [0, 3, 7, 11]).
+
+dbSymbolIntervals(major6, [0, 4, 7, 9]).
+dbSymbolIntervals(minor6, [0, 3, 7, 9]).
+
+dbSymbolIntervals(dominant9, [0, 4, 7, 10, 13]).
+dbSymbolIntervals(major9, [0, 4, 7, 11, 14]).
+dbSymbolIntervals(minor9, [0, 3, 7, 10, 14]).
+
+/*
+dbSymbolIntervals(dominant11,
+dbSymbolIntervals(major11,
+dbSymbolIntervals(minor11,
+
+dbSymbolIntervals(dom9maj13,
+dbSymbolIntervals(dom11maj13,
+dbSymbolIntervals(major13,
+dbSymbolIntervals(minor13,
+*/
 
 symbolChordBaseName((Root1, Quality), (Root2, Quality)) :-
 	toneName(Root1, Root2).
@@ -35,7 +60,7 @@ symbolChordF((Root, Quality), Chord, Fuzzy) :-
 	length(UsedInts, UsedCount),
 	
 	findall(Out, (member(Tone, Chord), intervalModDiff(Root, Tone, Out),
-		not(member(Out, Intervals))), FoundOuts),
+		not((member(AmodInt, Intervals), AmodInt mod 12 =:= Out))), FoundOuts),
 	length(FoundOuts, OutCount),
 	
 	Fuzzy is UsedCount / FullCount - OutCount / TonesCount.

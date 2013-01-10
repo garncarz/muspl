@@ -9,7 +9,9 @@ test(symbolChord, [nondet]) :-
 		Chord4 == [(c, -1), (es, -1), (ges, -1)],
 	symbolChord((g, sus2), [g, a, (d, 1)]),
 	symbolChord((d, sus4), [d, g, a]),
-	symbolChord((d, sus4), [a, g, a, d]).
+	symbolChord((d, sus4), [a, g, a, d]),
+	symbolChord(SymbChord5, [c, e, g, b, d]), SymbChord5 == (c, major9).
+	
 
 test(symbolChordF) :-
 	symbolChordF((c, major), [c, e, g], Fuzzy1),
@@ -20,7 +22,11 @@ test(symbolChordF) :-
 	symbolChordF((c, major), [c, d, e, g, ais], Fuzzy6), Fuzzy6 < Fuzzy5,
 	symbolChordF(((e, 0), sus2), [(e, 0), ges, (b, 0)], Fuzzy7),
 		Fuzzy7 == Fuzzy1.
-	
+
+test(dbSymbolIntervalsDiffer, [fail]) :-
+	dbSymbolIntervals(Quality1, Intervals),
+	dbSymbolIntervals(Quality2, Intervals),
+	Quality1 \= Quality2.
 
 :- end_tests(symbolChords).
 
