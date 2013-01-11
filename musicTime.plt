@@ -1,4 +1,4 @@
-:- begin_tests(time, [setup(clear), cleanup(clear)]).
+:- begin_tests(musicTime, [setup(clear), cleanup(clear)]).
 
 :- include('testSong.plt').
 
@@ -33,5 +33,5 @@ test(allSongChords, [setup(testSong), cleanup(clear)]) :-
 		Chord1 == [(f, 1), (d, 1), (c, 0), (bes, 0)])),
 	not(member([(c, 1), (f, 3)], Chords)).
 
-:- end_tests(time).
+:- end_tests(musicTime).
 

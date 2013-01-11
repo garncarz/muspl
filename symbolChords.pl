@@ -1,3 +1,10 @@
+:- module(symbolChords, [
+	probSymbolChord/2
+	]).
+
+:- use_module(basics).
+:- use_module(intervals).
+
 :- ['symbolChords.plt'].
 
 dbSymbolIntervals(major, [0, 4, 7]).

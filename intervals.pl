@@ -1,3 +1,8 @@
+:- module(intervals, [
+	intervalDiff/3,
+	intervalModDiff/3
+	]).
+
 :- ['intervals.plt'].
 
 dbToneToIntervalToC(c, (0, 0)).

@@ -1,3 +1,8 @@
+:- module(basics, [
+	toneName/2,
+	sameChords/2
+	]).
+
 :- ['basics.plt'].
 
 %% rest(-Rest)

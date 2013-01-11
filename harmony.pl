@@ -1,3 +1,8 @@
+:- module(harmony, []).
+
+:- use_module(basics).
+:- use_module(scales).
+
 :- ['harmony.plt'].
 
 %% possibleFunc(-Func)

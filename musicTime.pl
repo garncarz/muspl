@@ -1,4 +1,8 @@
-:- ['time.plt'].
+:- module(musicTime, [
+	allSongChords/1
+	]).
+
+:- ['musicTime.plt'].
 
 %% timeDiff(+Time1, +Time2, -Diff)
 % True if Time2 - Time1 = Diff in beats.

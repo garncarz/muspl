@@ -1,3 +1,12 @@
+:- module(scales, [
+	scale/2,
+	scaleAt/3
+	]).
+
+:- use_module(aux).
+:- use_module(basics).
+:- use_module(musicTime).
+
 :- ['scales.plt'].
 
 %% scale(-Scale, -Tones)

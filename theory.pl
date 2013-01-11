@@ -1,7 +1,4 @@
-:- module(theory, [
-	allSongChords/1,
-	probSymbolChord/2
-	]).
+:- module(theory, []).
 
 /** <module> Music theory
 
@@ -17,15 +14,12 @@ $ Beats : _|beats|_, e.g. =3=
 $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
 */
 
-:- use_module(aux).
-:- use_module(data).
-
-:- [
-	'theory/basics',
-	'theory/harmony',
-	'theory/intervals',
-	'theory/scales',
-	'theory/symbolChords',
-	'theory/time'
-	].
+:- reexport([
+	'basics',
+	'harmony',
+	'intervals',
+	'musicTime',
+	'scales',
+	'symbolChords'
+	]).
 
