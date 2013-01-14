@@ -1,5 +1,9 @@
 :- begin_tests(data).
 
+test(sameStaff) :-
+	sameStaff((4, 1, f), (6, 2, f)),
+	not(sameStaff((4, 1, f), (6, 2, g))).
+
 test(timeCmp1) :-
 	timeCmp(D1, (3, 2), (4, 1)), D1 == '<',
 	timeCmp(D2, (10, 3), (10, 3)), D2 == '=',

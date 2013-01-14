@@ -6,6 +6,8 @@
 	loadData/1,
 	clearData,
 	
+	sameStaff/2,
+	
 	allBeats/2,
 	allBeats/1,
 	
@@ -28,6 +30,8 @@ clearData :-
 	retractall(notation(_, _, _)),
 	retractall(timeSignature(_, _)),
 	retractall(notationScale(_)).
+
+sameStaff((_, _, Staff), (_, _, Staff)).
 
 %% allBeats(-Beats).
 %% allBeats(+Staff, -Beats).
