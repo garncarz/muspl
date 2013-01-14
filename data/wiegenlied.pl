@@ -4,8 +4,7 @@ timeSignature(6, 8).
 % timeSignature(0, 6, 8). FIXME od jakého času platí
 
 notation((1, 1, g), (a, 1), 8).
-% notation((1, 1, g), (f, 1), 4). FIXME ulehčení pro první verzi
-notation((1, 1, g), (f, 1), 8).
+notation((1, 1, g), (f, 1), 4).
 notation((1, 2, g), (bes, 1), 8).
 notation((1, 3, g), (a, 1), 8).
 notation((1, 3, g), (f, 1), 8).
@@ -146,8 +145,7 @@ notation((16, 1, g), (a, 0), [4, 8, 4]).
 notation((16, 6, g), r, 8).
 
 
-%notation((1, 1, f), (f, 0), 4). FIXME ulehčení pro první verzi
-notation((1, 1, f), (f, 0), 8).
+notation((1, 1, f), (f, 0), 4).
 notation((1, 1, f), (c, 1), 8).
 notation((1, 2, f), (d, 1), 8).
 notation((1, 3, f), (f, 0), 8).

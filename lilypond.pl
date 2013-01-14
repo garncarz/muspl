@@ -6,6 +6,8 @@
 :- use_module(data).
 :- use_module(theory).
 
+:- dynamic notationL/3.
+
 :- ['lilypond.plt'].
 
 %% chord(+Start, -Chord, +Duration)
@@ -13,22 +15,26 @@
 %
 % @param Chord (Start, -_Pitches_, Duration)
 chord(Start, (Start, Pitches, Duration), Duration) :-
-	findall(Pitch, notation(Start, Pitch, Duration), Pitches).
+	findall(Pitch, notationL(Start, Pitch, Duration), Pitches).
 
 %% chords(+Start, -Chords)
 % True if Chords (and nothing else) start at Start.
 chords(Start, Chords) :-
-	findall(Duration, notation(Start, _, Duration), Durs1),
+	findall(Duration, notationL(Start, _, Duration), Durs1),
 	sort(Durs1, Durs2),
 	maplist(chord(Start), Chords, Durs2).
 
 %% staffLine(+Staff, -Line)
 % True if Staff is made of music elements Line.
 staffLine(Staff, Line) :-
-	allBeats(Staff, Beats),
-	maplist(chords, Beats, Chords1),
-	flatten(Chords1, Chords2),
-	Line = Chords2.
+	nextChord(Staff, Chord),
+	retractChord(Chord),
+	conflictingChords(Chord, Conflicting),
+	(Conflicting == [] -> Item = Chord;
+		Item = [Chord | Conflicting]),
+	staffLine(Staff, Rest),
+	Line = [Item | Rest].
+staffLine(_, []).
 
 %% pitchLily(+Tone, -Lily)
 % True if Tone is represented by Lily string.
@@ -67,6 +73,28 @@ restLily((_, Rest, Duration), RestLily) :-
 		Duration = [Dur1 | DurR], restLily((_, Type, DurR), RestRLily),
 		atomic_list_concat([Type, Dur1, ' ~', RestRLily], RestLily)).
 
+conflictingChords(Chord, [Chord2 | RestChords]) :-
+	findConflictingChordTo(Chord, Chord2),
+	conflictingChords(Chord, RestChords).
+conflictingChords(Chord, []) :-
+	not(findConflictingChordTo(Chord, _)).
+
+findConflictingChordTo(Chord, Conflicting) :-
+	Chord = ((_, _, Staff), _, _),
+	nextChord(Staff, Conflicting),
+	conflictChords(Chord, Conflicting),
+	retractChord(Conflicting).
+
+nextChord(Staff, Chord) :-
+	allBeats(Staff, Beats),
+	member(Start, Beats),
+	chords(Start, Chords),
+	member(Chord, Chords),
+	
+	% still exists: @tbd polish
+	Chord = (_, _, Duration),
+	chord(Start, Chord, Duration).
+
 conflictChords(Chord1, Chord2) :-
 	Chord1 \= Chord2,
 	Chord1 = (Start1, _, Duration1),
@@ -81,20 +109,30 @@ spaceFiller(From, To, Filler) :-
 	timeDiff(From, To, Diff),
 	beatsToDuration(Diff, Dur),
 	Filler = (_, s, Dur).
-	
+
+indentLily(First, Chord, Lily) :-
+	First = (From, _, _),
+	Chord = (To, _, _),
+	(spaceFiller(From, To, Filler) ->
+		maplist(itemLily, [Filler, Chord], Lilies),
+		atomic_list_concat(Lilies, ' ', Lily);
+		itemLily(Chord, Lily)).
 
 voicesLily(Voices, VoicesLily) :-
 	is_list(Voices),
-	maplist(itemLily, Voices, VoicesLilies),
-	atomic_list_concat(VoicesLilies, ' \\ ', VL2),
-	atomic_list_concat(['<<', VL2, '>>\n'], ' ', VoicesLily).
+	Voices = [First | _],
+	maplist(indentLily(First), Voices, VoicesLilies),
+	atomic_list_concat(VoicesLilies, ' } \\\\ { ', VL2),
+	atomic_list_concat(['\n<< { ', VL2, ' } >>\n'], ' ', VoicesLily).
 
 %% itemLily(+Item, -ItemLily)
 % True if music element Item is represented by ItemLily string.
 %
 % @param Item chord or rest
-itemLily(Item, ItemLily) :- (chordLily(Item, ItemLily); restLily(Item, ItemLily);
-	voicesLily(Item, ItemLily)).
+itemLily(Item, ItemLily) :- 
+	voicesLily(Item, ItemLily);
+	chordLily(Item, ItemLily);
+	restLily(Item, ItemLily).
 
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
@@ -159,7 +197,7 @@ chordSymLily(Chord, ChordLily) :-
 				ChordLily)
 	)), !.
 chordSymLily(_Chord, '').
-	
+
 symbolChordsLily(String) :-
 	allSongChords(Chords),
 	maplist(chordSymLily, Chords, Lilies),
@@ -167,9 +205,19 @@ symbolChordsLily(String) :-
 	atomic_list_concat(['symChords = \\chordmode { ', LiliesStr, ' }\n\n'],
 		String).
 
+copyNotation :-
+	notation(Start, What, Dur),
+	assertz(notationL(Start, What, Dur)),
+	fail.
+copyNotation.
+
+retractChord((Start, _, Duration)) :-
+	retractall(notationL(Start, _, Duration)).
+
 %% export(+Filename)
 % Exports notation into a Lilypond file.
 export(Filename) :-
+	copyNotation,
 	open(Filename, write, File),
 	write(File, '\\version "2.16.1"\n\n'),
 	symbolChordsLily(SymChords),

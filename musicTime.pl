@@ -28,13 +28,12 @@ durationToBeats(Duration, Beats) :-
 	Beats is NoteDuration / Duration.
 durationToBeats([], 0).
 durationToBeats([Duration | Rest], Beats) :-
-	timeSignature(_, NoteDuration),
-	Beat1 is NoteDuration / Duration,
+	durationToBeats(Duration, Beat1),
 	durationToBeats(Rest, BeatsR),
 	Beats is Beat1 + BeatsR.
 
 beatsToDuration(Beats, Duration) :-
-	number(Beats),
+	number(Beats), Beats > 0,
 	timeSignature(_, NoteDuration),
 	FloatDuration is NoteDuration / Beats,
 	normalizedDuration(FloatDuration, Duration).
