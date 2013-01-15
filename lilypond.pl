@@ -218,19 +218,30 @@ retractChord((Start, _, Duration)) :-
 % Exports notation into a Lilypond file.
 export(Filename) :-
 	copyNotation,
-	open(Filename, write, File),
-	write(File, '\\version "2.16.1"\n\n'),
+	
 	symbolChordsLily(SymChords),
-	write(File, SymChords),
 	staffLily(g, StaffG),
-	write(File, StaffG),
 	staffLily(f, StaffF),
-	write(File, StaffF),
-	write(File, '\\score { <<\n'),
-	write(File, '\\new ChordNames \\symChords\n'),
-	write(File, '\\new PianoStaff << '),
-	write(File, '\\new Staff \\staffg '),
-	write(File, '\\new Staff \\stafff >>'),
-	write(File, '\n>>\n\\layout { }\n\\midi { }\n}\n'),
-	close(File), !.
+	
+	tell(Filename),
+	maplist(write, [
+		'\\version "2.16.1"\n\n',
+		SymChords,
+		StaffG,
+		StaffF,
+		'\\score { <<\n',
+		%'\\new ChordNames \\symChords\n',
+		'\\new PianoStaff << ',
+		'\\new Staff \\staffg ',
+		'\\new Staff \\stafff >>',
+		'\n>>\n\\layout { }\n}\n\n',
+		'\\score { <<\n',
+		%'\\new Staff { \\set Staff.midiInstrument = #"church organ" ',
+		%	'\\symChords}\n',
+		'\\new PianoStaff << ',
+		'\\new Staff \\staffg ',
+		'\\new Staff \\stafff >>',
+		'\n>>\n\\midi { }\n}\n\n'
+	]),
+	told, !.
 

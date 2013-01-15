@@ -4,7 +4,9 @@
 :- [data, theory, lilypond].
 :- run_tests.
 
-wieg :- loadData('wiegenlied').
+wieg :- wiegL, wiegW.
+wiegL :- loadData('wiegenlied').
+wiegW :- export('wiegenlied.ly').
 
-:- wieg.
+:- wiegL.
 
