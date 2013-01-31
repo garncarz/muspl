@@ -40,26 +40,30 @@ staffLine(_, []).
 % True if Tone is represented by Lily string.
 %
 % @param Tone _|(Pitch, Octave)|_
-pitchLily((Pitch, Octave), Lily) :- once((
-	Octave > 0, Octave2 is Octave - 1, pitchLily((Pitch, Octave2), Lily2),
+pitchLily((Pitch, Octave), Lily) :-
+	Octave > 0 -> Octave2 is Octave - 1, pitchLily((Pitch, Octave2), Lily2),
 		concat(Lily2, '\'', Lily);
-	Octave < 0, Octave2 is Octave + 1, pitchLily((Pitch, Octave2), Lily2),
+	Octave < 0 -> Octave2 is Octave + 1, pitchLily((Pitch, Octave2), Lily2),
 		concat(Lily2, ',', Lily);
-	Lily = Pitch)).
+	Lily = Pitch.
+
+unfoldDurs(Duration, Action, Result) :-
+	number(Duration) -> call(Action, Duration, Result);
+	Duration = [Dur1] -> call(Action, Dur1, Result);
+	Duration = [Dur1 | DursRest],
+	call(Action, Dur1, Res1),
+	unfoldDurs(DursRest, Action, ResultsRest),
+	atomic_list_concat([Res1, ' ~', ResultsRest], Result).
 
 %% chordLily(+Chord, -ChordLily)
 % True if Chord is represented by ChordLily string.
-chordLily(Chord, ChordLily) :- once((
+chordLily(Chord, ChordLily) :-
 	Chord = (_, Pitches, Duration),
-	maplist(pitchLily, Pitches, Pitches2),
-	(length(Pitches, 1), [Str] = Pitches2;
+		maplist(pitchLily, Pitches, Pitches2),
+	(length(Pitches, 1) -> [Str] = Pitches2;
 		atomic_list_concat(Pitches2, ' ', StrPitches),
 		atomic_list_concat(['<', StrPitches, '>'], Str)),
-	(number(Duration), atomic_concat(Str, Duration, ChordLily);
-		Duration = [Dur1], atomic_concat(Str, Dur1, ChordLily);
-		Duration = [Dur1 | DurR], chordLily((_, Pitches, DurR), ChordRLily),
-		atomic_list_concat([Str, Dur1, ' ~', ChordRLily], ChordLily))
-	)).
+	unfoldDurs(Duration, atomic_concat(Str), ChordLily).
 
 %% restLily(+Rest, -RestLily)
 % True if Rest is represented by RestLily string.
@@ -68,10 +72,7 @@ chordLily(Chord, ChordLily) :- once((
 restLily((_, Rest, Duration), RestLily) :-
 	((Rest == r; Rest == [r]) -> Type = r;
 	(Rest == s; Rest == [s]) -> Type = s),
-	(number(Duration) -> atomic_concat(Type, Duration, RestLily);
-		Duration = [Dur1] -> atomic_concat(Type, Dur1, RestLily);
-		Duration = [Dur1 | DurR], restLily((_, Type, DurR), RestRLily),
-		atomic_list_concat([Type, Dur1, ' ~', RestRLily], RestLily)).
+	unfoldDurs(Duration, atomic_concat(Type), RestLily).
 
 conflictingChords(Chord, [Chord2 | RestChords]) :-
 	findConflictingChordTo(Chord, Chord2),
@@ -189,15 +190,10 @@ chordSymLily(DurChord, ChordLily) :-
 	dbChordQLily(Quality, LilQ1),
 	concat(':', LilQ1, LilQ)),
 	
-	(number(Duration) ->
-		atomic_list_concat([Root, Duration, LilQ], ChordLily);
-		Duration = [Dur1] ->
-			atomic_list_concat([Root, Dur1, LilQ], ChordLily);
-		Duration = [Dur1 | DurR] -> chordSymLily((Chord, DurR), ChordRLily),
-			atomic_list_concat([Root, Dur1, LilQ, ' ~', ChordRLily],
-				ChordLily)
-	).
+	unfoldDurs(Duration, chordSymLilyFormat(Root, LilQ), ChordLily).
 chordSymLily(_Chord, '').
+chordSymLilyFormat(Root, LilQ, Duration, Formatted) :-
+	atomic_list_concat([Root, Duration, LilQ], Formatted).
 
 symbolChordsLily(String) :-
 	allSongChordsWithDur(DurChords),
