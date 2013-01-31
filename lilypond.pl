@@ -179,28 +179,29 @@ dbChordQLily(major13, 'maj13.11').
 dbChordQLily(minor13, 'm13.11').
 dbChordQLily(Quality, Quality).
 
-chordSymLily(Chord, ChordLily) :-
-	Duration = 8,
-
+chordSymLily(DurChord, ChordLily) :-
+	DurChord = (Chord, Duration),
+	
 	probSymbolChord(Sym, Chord),
-	(Sym == r, ChordLily = 'r8';
+	(Sym == r -> Root = 'r', LilQ = '';
 	
 	Sym = (Root, Quality),
-	dbChordQLily(Quality, LilQ), !,
+	dbChordQLily(Quality, LilQ1),
+	concat(':', LilQ1, LilQ)),
 	
-	(number(Duration),
-		atomic_list_concat([Root, Duration, ':', LilQ], ChordLily);
-		Duration = [Dur1],
-			atomic_list_concat([Root, Dur1, ':', LilQ], ChordLily);
-		Duration = [Dur1 | DurR], chordSymLily((_Pitches, DurR), ChordRLily),
-			atomic_list_concat([Root, Dur1, ':', LilQ, ' ~', ChordRLily],
+	(number(Duration) ->
+		atomic_list_concat([Root, Duration, LilQ], ChordLily);
+		Duration = [Dur1] ->
+			atomic_list_concat([Root, Dur1, LilQ], ChordLily);
+		Duration = [Dur1 | DurR] -> chordSymLily((Chord, DurR), ChordRLily),
+			atomic_list_concat([Root, Dur1, LilQ, ' ~', ChordRLily],
 				ChordLily)
-	)), !.
+	).
 chordSymLily(_Chord, '').
 
 symbolChordsLily(String) :-
-	allSongChords(Chords),
-	maplist(chordSymLily, Chords, Lilies),
+	allSongChordsWithDur(DurChords),
+	maplist(chordSymLily, DurChords, Lilies),
 	atomic_list_concat(Lilies, ' ', LiliesStr),
 	atomic_list_concat(['symChords = \\chordmode { ', LiliesStr, ' }\n\n'],
 		String).
@@ -230,15 +231,15 @@ export(Filename) :-
 		StaffG,
 		StaffF,
 		'\\score { <<\n',
-		%'\\new ChordNames \\symChords\n',
-		'\\new PianoStaff << ',
+		'\t\\new ChordNames \\symChords\n',
+		'\t\\new PianoStaff << ',
 		'\\new Staff \\staffg ',
 		'\\new Staff \\stafff >>',
 		'\n>>\n\\layout { }\n}\n\n',
 		'\\score { <<\n',
-		%'\\new Staff { \\set Staff.midiInstrument = #"church organ" ',
-		%	'\\symChords}\n',
-		'\\new PianoStaff << ',
+		'\t\\new Staff { \\set Staff.midiInstrument = #"church organ" ',
+			'\\symChords}\n',
+		'\t\\new PianoStaff << ',
 		'\\new Staff \\staffg ',
 		'\\new Staff \\stafff >>',
 		'\n>>\n\\midi { }\n}\n\n'

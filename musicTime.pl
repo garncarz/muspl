@@ -3,7 +3,8 @@
 	timeDiff/3,
 	durationToBeats/2,
 	beatsToDuration/2,
-	allSongChords/1
+	allSongChords/1,
+	allSongChordsWithDur/1
 	]).
 
 :- ['musicTime.plt'].
@@ -47,6 +48,10 @@ normalizedDuration(Duration, Normalized) :-
 		normalizedDuration(DurRest, NormRest),
 		Normalized = [NormDur | NormRest]).
 
+durationDiff(Time1, Time2, Diff) :-
+	timeDiff(Time1, Time2, TimeDiff),
+	beatsToDuration(TimeDiff, Diff).
+
 %% toneAtTime(-Tone, +Time)
 % True if Tone sounds at Time.
 toneAtTime(Tone, Time) :-
@@ -61,9 +66,32 @@ toneAtTime(Tone, Time) :-
 chordAtTime(Chord, Time) :-
 	findall(Tone, toneAtTime(Tone, Time), Chord).
 
+first((A, _), A).
+afterEndBeat(EndBeat) :-
+	allBeats(Beats),
+	maplist(first, Beats, Measures),
+	max_list(Measures, MaxMeasure),
+	
+	once(timeSignature(BeatsPerMeasure, _)),
+	AfterBeat is BeatsPerMeasure + 1,
+	
+	EndBeat = (MaxMeasure, AfterBeat).
+
 %% allSongChords(-Chords)
 % Returns all song's chords as they follow.
 allSongChords(Chords) :-
 	allBeats(Beats),
 	maplist(chordAtTime, Chords, Beats).
+allSongChordsWithDur(DurChords) :-
+	allBeats(Beats),
+	
+	afterEndBeat(EndBeat),
+	append(Beats, [EndBeat], NextBeats),
+	maplist(durationDiff, [(1, 0) | Beats], NextBeats, Durs1),
+	Durs1 = [_ | Durs],
+
+	maplist(chordAtTime, Chords, Beats),
+	
+	maplist(zip, Chords, Durs, DurChords).
+zip(A, B, (A, B)).
 
