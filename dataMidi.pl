@@ -1,6 +1,8 @@
-:- module(dataMidi, [load/1]).
+:- module(dataMidi, [loadMidi/1]).
 
+:- use_module(data).
 :- use_module(midi).
+:- use_module(musicTime).
 
 :- ['dataMidi.plt'].
 
@@ -29,18 +31,47 @@ toneFromMidi(MidiTone, (Tone, Octave)) :-
 
 % TODO generalise
 beatsTime(Beats, Time) :-
-	TrueBeats is Beats / 4,
-	writeln(TrueBeats),
+	% TrueBeats is Beats / 4,
+	TrueBeats is Beats,
 	MeasureBeats is 6 / 8 * 4,
-	writeln(MeasureBeats),
 	Measure is floor(TrueBeats / MeasureBeats),
-	Beat is (TrueBeats - Measure * MeasureBeats) / MeasureBeats * 6,
-	RealMeasure is Measure + 1,
-	Time = (RealMeasure, Beat).
+	Beat is (TrueBeats - Measure * MeasureBeats) / MeasureBeats * 6 + 1,
+	TrueMeasure is Measure + 1,
+	Time = (TrueMeasure, Beat, g).
 
 
-load(Filename) :-
+findToneEnding(Chan, Tone, Track, Ending) :-
+	Track = [(Time, Event) | RestTrack],
+	(Event = (noteOn, Chan, Tone, Vol), Vol == 0 ->
+		Ending = Time;
+	findToneEnding(Chan, Tone, RestTrack, Ending)).
+
+parseTones([], []).
+parseTones(Track, Tones) :-
+	Track = [(Beats, Event) | RestTrack],
+	parseTones(RestTrack, RestTones),
+	(Event = (noteOn, Chan, MTone, Vol), Vol > 0 ->
+		findToneEnding(Chan, MTone, RestTrack, Ending),
+		beatsTime(Beats, Time),
+		toneFromMidi(MTone, Tone),
+		Dur2 is Ending - Beats,
+		Dur1 is 1 / (Dur2 / 4),
+		normalizedDuration(Dur1, Dur),
+		ToneNotation = (Time, Tone, Dur),
+		Tones = [ToneNotation | RestTones];
+	Tones = RestTones).
+
+
+addNotation((Time, Tone, Dur)) :-
+	assertz(notation(Time, Tone, Dur)).
+
+loadMidi(Filename) :-
 	readMidi(Filename, Tracks, TPB),
 	maplist(trackToAbsBeats(TPB), Tracks, AbsTracks),
-	writeln(AbsTracks).
+	maplist(parseTones, AbsTracks, Tones),
+	flatten(Tones, AllTones),
+	clearData,
+	assertz(notationScale((f, major))),  % TODO generalise
+	assertz(timeSignature(6, 8)),
+	maplist(addNotation, AllTones).
 

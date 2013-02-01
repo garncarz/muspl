@@ -1,4 +1,4 @@
-:- module(lilypond, [export/1]).
+:- module(lilypond, [exportLy/1]).
 
 /** <module> Lilypond export
 */
@@ -220,9 +220,9 @@ copyNotation.
 retractChord((Start, _, Duration)) :-
 	retractall(notationL(Start, _, Duration)).
 
-%% export(+Filename)
+%% exportLy(+Filename)
 % Exports notation into a Lilypond file.
-export(Filename) :-
+exportLy(Filename) :-
 	copyNotation,
 	
 	symbolChordsLily(SymChords),

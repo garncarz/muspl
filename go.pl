@@ -1,7 +1,7 @@
 #!/usr/bin/swipl --nopce -f
 
 :- doc_server(4000, [edit(false)]).
-:- [data, theory, lilypond].
+:- [data, dataMidi, theory, lilypond].
 :- run_tests.
 
 wieg :- wiegL, wiegW.

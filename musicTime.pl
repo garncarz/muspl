@@ -3,6 +3,7 @@
 	timeDiff/3,
 	durationToBeats/2,
 	beatsToDuration/2,
+	normalizedDuration/2,
 	addDurations/3,
 	allSongChords/1,
 	allSymbChordsWithDur/1
