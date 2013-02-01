@@ -34,7 +34,14 @@ test(normalizedDuration) :-
 	normalizedDuration(1.6, Dur1), Dur1 == [2, 8],
 	normalizedDuration(4, Dur2), Dur2 == [4],
 	normalizedDuration(0, Dur3), Dur3 == [],
-	normalizedDuration(999, Dur4), Dur4 == [].
+	normalizedDuration(999, Dur4), Dur4 == [],
+	normalizedDuration(0.5, Dur5), Dur5 == [1, 1].
+
+test(addDurations) :-
+	addDurations(8, [8], Dur1), Dur1 == [4],
+	addDurations(8, 4, Dur2), Dur2 == [4, 8],
+	addDurations(1, 1, Dur3), Dur3 == [1, 1],
+	addDurations([8, 2], 8, Dur4), Dur4 == [2, 4].
 
 test(toneAtTime1, [setup(testSong), cleanup(clear),
 		set(Tone == [(d, 1), (bes, 1)])]) :-

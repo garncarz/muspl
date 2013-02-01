@@ -3,9 +3,13 @@
 	timeDiff/3,
 	durationToBeats/2,
 	beatsToDuration/2,
+	addDurations/3,
 	allSongChords/1,
-	allSongChordsWithDur/1
+	allSymbChordsWithDur/1
 	]).
+
+:- use_module(aux).
+:- use_module(symbolChords).
 
 :- ['musicTime.plt'].
 
@@ -42,7 +46,7 @@ beatsToDuration(Beats, Duration) :-
 normalizedDuration(Duration, Normalized) :-
 	(Duration > 128; Duration < 10 * epsilon) -> Normalized = [];
 	
-	NormDur is 2 ** ceiling(log(Duration) / log(2)),
+	NormDur is max(2 ** ceiling(log(Duration) / log(2)), 1),
 	(NormDur =:= Duration -> Normalized = [NormDur];
 		DurRest is 1 / (1 / Duration - 1 / NormDur),
 		normalizedDuration(DurRest, NormRest),
@@ -51,6 +55,14 @@ normalizedDuration(Duration, Normalized) :-
 durationDiff(Time1, Time2, Diff) :-
 	timeDiff(Time1, Time2, TimeDiff),
 	beatsToDuration(TimeDiff, Diff).
+
+addDurations(Dur1, Dur2, Dur) :-
+	map_list(inverse, Dur1, InvDur1),
+	map_list(inverse, Dur2, InvDur2),
+	sum_list(InvDur1, SumInvDur1),
+	sum_list(InvDur2, SumInvDur2),
+	DurSum is 1 / (SumInvDur1 + SumInvDur2),
+	normalizedDuration(DurSum, Dur).
 
 %% toneAtTime(-Tone, +Time)
 % True if Tone sounds at Time.
@@ -82,7 +94,7 @@ afterEndBeat(EndBeat) :-
 allSongChords(Chords) :-
 	allBeats(Beats),
 	maplist(chordAtTime, Chords, Beats).
-allSongChordsWithDur(DurChords) :-
+allSymbChordsWithDur(DurSymbChords) :-
 	allBeats(Beats),
 	
 	afterEndBeat(EndBeat),
@@ -91,7 +103,7 @@ allSongChordsWithDur(DurChords) :-
 	Durs1 = [_ | Durs],
 
 	maplist(chordAtTime, Chords, Beats),
-	
-	maplist(zip, Chords, Durs, DurChords).
+	maplist(probSymbolChord, SymbChords, Chords),
+	maplist(zip, SymbChords, Durs, DurSymbChords).
 zip(A, B, (A, B)).
 

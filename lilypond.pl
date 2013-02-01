@@ -180,28 +180,37 @@ dbChordQLily(major13, 'maj13.11').
 dbChordQLily(minor13, 'm13.11').
 dbChordQLily(Quality, Quality).
 
-chordSymLily(DurChord, ChordLily) :-
-	DurChord = (Chord, Duration),
-	
-	probSymbolChord(Sym, Chord),
+mergeDursByFirst([(X1, Dur1) | Rest], [], Merged) :-
+	mergeDursByFirst(Rest, [(X1, Dur1)], Merged).
+mergeDursByFirst([(X2, Dur2) | Rest], [(X1, Dur1) | Done], Merged) :-
+	X1 == X2 ->
+		addDurations(Dur1, Dur2, Dur),
+		mergeDursByFirst(Rest, [(X1, Dur) | Done], Merged);
+	mergeDursByFirst(Rest, [(X2, Dur2), (X1, Dur1) | Done], Merged).
+mergeDursByFirst([], DoneReversed, Merged) :-
+	reverse(DoneReversed, Merged).
+
+chordSymLily((Sym, Duration), ChordLily) :-
 	(Sym == r -> Root = 'r', LilQ = '';
-	
 	Sym = (Root, Quality),
 	dbChordQLily(Quality, LilQ1),
 	concat(':', LilQ1, LilQ)),
-	
 	unfoldDurs(Duration, chordSymLilyFormat(Root, LilQ), ChordLily).
 chordSymLily(_Chord, '').
 chordSymLilyFormat(Root, LilQ, Duration, Formatted) :-
 	atomic_list_concat([Root, Duration, LilQ], Formatted).
 
 symbolChordsLily(String) :-
-	allSongChordsWithDur(DurChords),
-	maplist(chordSymLily, DurChords, Lilies),
+	allSymbChordsWithDur(DurSymbChords),
+	mergeDursByFirst(DurSymbChords, [], MergedDurSymbs),
+	maplist(chordSymLily, MergedDurSymbs, Lilies),
 	atomic_list_concat(Lilies, ' ', LiliesStr),
 	atomic_list_concat(['symChords = \\chordmode { ', LiliesStr, ' }\n\n'],
 		String).
 
+copyNotation :-
+	retractall(notationL/3),
+	fail.
 copyNotation :-
 	notation(Start, What, Dur),
 	assertz(notationL(Start, What, Dur)),
