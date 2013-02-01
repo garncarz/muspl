@@ -236,7 +236,7 @@ export(Filename) :-
 		StaffG,
 		StaffF,
 		'\\score { <<\n',
-		'\t\\new ChordNames \\symChords\n',
+		'\t\\new ChordNames { \\set chordChanges = ##t \\symChords }\n',
 		'\t\\new PianoStaff << ',
 		'\\new Staff \\staffg ',
 		'\\new Staff \\stafff >>',
