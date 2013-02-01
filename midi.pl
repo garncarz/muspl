@@ -1,4 +1,7 @@
-:- module(midi, [readMidi/3]).
+:- module(midi, [
+	readMidi/3,
+	trackToAbsBeats/3
+	]).
 
 keypress :- get_char(_).
 
@@ -130,5 +133,19 @@ readMidi(Filename, Tracks, TPB) :-
 	close(File).
 
 
-run :- readMidi('wiegenlied.midi', Tracks, TPB), writeln((Tracks, TPB)).
+trackToAbsBeats(TPB, Track, AbsTrack) :-
+	trackToAbsBeats(TPB, 0, Track, AbsTrack).
+trackToAbsBeats(TPB, StartBeats, Track, AbsTrack) :-
+	Track = [(Delta, Event) | Rest], !,
+	Beats is StartBeats + Delta / TPB,
+	trackToAbsBeats(TPB, Beats, Rest, AbsRest),
+	AbsTrack = [(Beats, Event) | AbsRest].
+trackToAbsBeats(_, _, [], []).
+
+
+run :-
+	readMidi('wiegenlied.midi', Tracks, TPB),
+	% writeln((Tracks, TPB)),
+	maplist(trackToAbsBeats(TPB), Tracks, AbsTracks),
+	writeln(AbsTracks).
 
