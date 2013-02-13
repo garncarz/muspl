@@ -9,20 +9,29 @@
 
 :- ['aux.plt'].
 
+%% avg_list(+List, -Avg)
+% Average value of List is Avg.
 avg_list(List, Avg) :-
 	length(List, Len), Len > 0,
 	sum_list(List, Sum),
 	Avg is Sum / Len.
 
+%% inverse(+Number, -Inversed)
+% Inversed = 1 / Number
 inverse(X, I) :-
 	I is 1 / X.
 
-map_list(Action, List, Mapped) :-
+%% map_list(:Goal, +List, -MappedList).
+%% map_list(:Goal, +Item, -MappedItem).
+% Extension of maplist/3, can map on an atom returning a list with the result.
+map_list(Goal, List, Mapped) :-
 	is_list(List), !,
-	maplist(Action, List, Mapped).
-map_list(Action, X, [Mapped]) :-
-	call(Action, X, Mapped).
+	maplist(Goal, List, Mapped).
+map_list(Goal, Item, [Mapped]) :-
+	call(Goal, Item, Mapped).
 
+%% multiAssert(+Facts)
+% Assertzs all the Facts from a list.
 multiAssert([Fact | Rest]) :-
 	assertz(Fact),
 	multiAssert(Rest).
