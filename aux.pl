@@ -2,7 +2,8 @@
 	avg_list/2,
 	inverse/2,
 	map_list/3,
-	multiAssert/1
+	multiAssert/1,
+	writeTree/1
 	]).
 
 :- use_module(data).
@@ -36,4 +37,31 @@ multiAssert([Fact | Rest]) :-
 	assertz(Fact),
 	multiAssert(Rest).
 multiAssert([]).
+
+
+writeTree(Tree) :-
+	writeTree(0, Tree), !.
+
+writeTree(Level, X) :-
+	writeIndent(Level),
+	ourAtom(X) -> writeln(X);
+		(X =.. [',' | Content] -> writeln('(');
+			is_list(X) -> Content = X, writeln('[')),
+		writeTreeList(Level + 1, Content).
+
+writeTreeList(_, []).
+writeTreeList(Level, [First | Rest]) :-
+	writeTree(Level, First),
+	writeTreeList(Level, Rest).
+
+writeIndent(Level) :-
+	Level > 0,
+	write('  '),
+	writeIndent(Level - 1).
+writeIndent(_).
+
+ourAtom(Atom) :-
+	atom(Atom);
+	number(Atom);
+	Atom = (_, _).
 

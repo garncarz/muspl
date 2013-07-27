@@ -1,6 +1,7 @@
 :- module(musicTime, [
 	simpleTime/2,
 	timeDiff/3,
+	timeAdd/3,
 	durationToBeats/2,
 	beatsToDuration/2,
 	normalizedDuration/2,
@@ -25,6 +26,16 @@ timeDiff(Time1, Time2, Diff) :-
 	simpleTime(Time2, (Measure2, Beat2)),
 	once(timeSignature(BeatsPerMeasure, _)),
 	Diff is (Measure2 - Measure1) * BeatsPerMeasure + Beat2 - Beat1.
+
+timeAdd(Time1, Dur, Time2) :-
+	Time1 = (Measure1, Beat1, Staff),
+	once(timeSignature(BeatsPerMeasure, _)),
+	durationToBeats(Dur, BeatsAdded),
+	BeatAdded is Beat1 + BeatsAdded,
+	Measure2 is Measure1 + (Beat1 + BeatAdded) / BeatsPerMeasure,
+	Beat2 is (Beat1 + BeatAdded) mod BeatsPerMeasure,
+	Time2 = (Measure2, Beat2, Staff).
+	
 
 %% durationToBeats(+Duration, -Beats)
 % True if Duration(s) take Beats of beats.

@@ -3,10 +3,12 @@
 /** <module> Lilypond export
 */
 
+:- use_module(aux).
 :- use_module(data).
 :- use_module(theory).
+:- use_module(musicTime).
 
-:- dynamic notationL/3.
+:- dynamic chordsDb/1, chordsDbMaxCount/1.
 
 :- ['lilypond.plt'].
 
@@ -15,25 +17,42 @@
 %
 % @param Chord (Start, -_Pitches_, Duration)
 chord(Start, (Start, Pitches, Duration), Duration) :-
-	findall(Pitch, notationL(Start, Pitch, Duration), Pitches).
+	findall(Pitch, notation(Start, Pitch, Duration), Pitches).
 
 %% chords(+Start, -Chords)
 % True if Chords (and nothing else) start at Start.
 chords(Start, Chords) :-
-	findall(Duration, notationL(Start, _, Duration), Durs1),
+	findall(Duration, notation(Start, _, Duration), Durs1),
 	sort(Durs1, Durs2),
 	maplist(chord(Start), Chords, Durs2).
 
-%% staffLine(+Staff, -Line)
-% True if Staff is made of music elements Line.
-staffLine(Staff, Line) :-
+createAllChordsDb(Staff) :-
+	allBeats(Staff, Beats),
+	maplist(chords, Beats, Chords1),
+	flatten(Chords1, Chords),
+	foreach(member(Chord, Chords), assertz(chordsDb(Chord))).
+createAllChordsDb :-
+	retractall(chordsDb(_)),
+	createAllChordsDb(g),
+	createAllChordsDb(f),
+	aggregate_all(count, chordsDb(_), Count),
+	retractall(chordsDbMaxCount(_)),
+	asserta(chordsDbMaxCount(Count)),
+	writeln(maxCount:Count).
+
+staffLine(StartTime, Line) :-
+	StartTime = (_, _, Staff),
 	nextChord(Staff, Chord),
+	Chord = (ChordTime, _, Dur),
 	retractChord(Chord),
 	conflictingChords(Chord, Conflicting),
-	(Conflicting == [] -> Item = Chord;
-		Item = [Chord | Conflicting]),
-	staffLine(Staff, Rest),
-	Line = [Item | Rest].
+	(Conflicting == [] -> Item1 = [Chord];
+		Item1 = [[Chord | Conflicting]]),
+	(spaceFiller(StartTime, ChordTime, Filler) -> append([Filler], Item1, Item);
+		Item = Item1),
+	timeAdd(ChordTime, Dur, NextTime),
+	staffLine(NextTime, Rest),
+	append(Item, Rest, Line).
 staffLine(_, []).
 
 %% pitchLily(+Tone, -Lily)
@@ -87,14 +106,14 @@ findConflictingChordTo(Chord, Conflicting) :-
 	retractChord(Conflicting).
 
 nextChord(Staff, Chord) :-
-	allBeats(Staff, Beats),
-	member(Start, Beats),
-	chords(Start, Chords),
-	member(Chord, Chords),
-	
-	% still exists: @tbd polish
-	Chord = (_, _, Duration),
-	chord(Start, Chord, Duration).
+	chordsDb(Chord),
+	Chord = ((_, _, Staff), _, _).
+
+retractChord(Chord) :-
+	chordsDb(Chord),
+	retractall(chordsDb(Chord)),
+	aggregate_all(count, chordsDb(_), Count),
+	(Count mod 100 =:= 0 -> writeln(count:Count); true).
 
 conflictChords(Chord1, Chord2) :-
 	Chord1 \= Chord2,
@@ -148,7 +167,7 @@ staffLily(Staff, String) :-
 		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
 		'\n'], '', Header),
 	
-	staffLine(Staff, StaffLine),
+	staffLine((1, 1, Staff), StaffLine),
 	maplist(itemLily, StaffLine, LilyItems),
 	atomic_list_concat(LilyItems, ' ', LilyLine),
 	
@@ -208,22 +227,11 @@ symbolChordsLily(String) :-
 	atomic_list_concat(['symChords = \\chordmode { ', LiliesStr, ' }\n\n'],
 		String).
 
-copyNotation :-
-	retractall(notationL/3),
-	fail.
-copyNotation :-
-	notation(Start, What, Dur),
-	assertz(notationL(Start, What, Dur)),
-	fail.
-copyNotation.
-
-retractChord((Start, _, Duration)) :-
-	retractall(notationL(Start, _, Duration)).
 
 %% exportLy(+Filename)
 % Exports notation into a Lilypond file.
 exportLy(Filename) :-
-	copyNotation,
+	createAllChordsDb,
 	
 	symbolChordsLily(SymChords),
 	staffLily(g, StaffG),
