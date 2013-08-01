@@ -16,8 +16,13 @@
 % True if Chord consisting of _Pitches_, length as Duration starts at Start.
 %
 % @param Chord (Start, -_Pitches_, Duration)
-chord(Start, (Start, Pitches, Duration), Duration) :-
-	findall(Pitch, notation(Start, Pitch, Duration), Pitches).
+chord(Start, (Start, Result, Duration), Duration) :-
+	findall(Pitch, notation(Start, Pitch, Duration), Pitches),
+	sort(Pitches, PitchesUnique),
+	(not(member(r, PitchesUnique)) -> Result = PitchesUnique;
+		(select(r, PitchesUnique, JustPitches),
+		JustPitches \= [] -> Result = JustPitches;
+			Result = r)).
 
 %% chords(+Start, -Chords)
 % True if Chords (and nothing else) start at Start.
@@ -67,12 +72,14 @@ pitchLily((Pitch, Octave), Lily) :-
 	Lily = Pitch.
 
 unfoldDurs(Duration, Action, Result) :-
+	unfoldDurs(Duration, Action, Result, ' ~').
+unfoldDurs(Duration, Action, Result, Glue) :-
 	number(Duration) -> call(Action, Duration, Result);
 	Duration = [Dur1] -> call(Action, Dur1, Result);
 	Duration = [Dur1 | DursRest],
 	call(Action, Dur1, Res1),
-	unfoldDurs(DursRest, Action, ResultsRest),
-	atomic_list_concat([Res1, ' ~', ResultsRest], Result).
+	unfoldDurs(DursRest, Action, ResultsRest, Glue),
+	atomic_list_concat([Res1, Glue, ResultsRest], Result).
 
 %% chordLily(+Chord, -ChordLily)
 % True if Chord is represented by ChordLily string.
@@ -91,7 +98,7 @@ chordLily(Chord, ChordLily) :-
 restLily((_, Rest, Duration), RestLily) :-
 	((Rest == r; Rest == [r]) -> Type = r;
 	(Rest == s; Rest == [s]) -> Type = s),
-	unfoldDurs(Duration, atomic_concat(Type), RestLily).
+	unfoldDurs(Duration, atomic_concat(Type), RestLily, ' ').
 
 conflictingChords(Chord, [Chord2 | RestChords]) :-
 	findConflictingChordTo(Chord, Chord2),
@@ -145,14 +152,25 @@ voicesLily(Voices, VoicesLily) :-
 	atomic_list_concat(VoicesLilies, ' } \\\\ { ', VL2),
 	atomic_list_concat(['\n<< { ', VL2, ' } >>\n'], ' ', VoicesLily).
 
+
+newBar(Item, Bar) :-
+	(Item = ((Bar, 1, Staff), _, _);
+	Item = [((Bar, 1, Staff), _, _) | _]),
+	nonvar(Bar), nonvar(Staff).
+
 %% itemLily(+Item, -ItemLily)
 % True if music element Item is represented by ItemLily string.
 %
 % @param Item chord or rest
-itemLily(Item, ItemLily) :- 
-	voicesLily(Item, ItemLily);
-	chordLily(Item, ItemLily);
-	restLily(Item, ItemLily).
+itemLily(Item, CommentedItemLily) :- 
+	(newBar(Item, Bar) ->
+		atomic_list_concat(['\n% Bar ', Bar, ':\n'], '', Prefix);
+		Prefix = ''),
+	(voicesLily(Item, ItemLily);
+		chordLily(Item, ItemLily);
+		restLily(Item, ItemLily)),
+	atomic_list_concat([Prefix, ItemLily], '', CommentedItemLily).
+	
 
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
@@ -250,7 +268,7 @@ exportLy(Filename) :-
 		'\\new Staff \\stafff >>',
 		'\n>>\n\\layout { }\n}\n\n',
 		'\\score { <<\n',
-		'\t\\new Staff { \\set Staff.midiInstrument = #"church organ" ',
+		'\t% \\new Staff { \\set Staff.midiInstrument = #"church organ" ',
 			'\\symChords}\n',
 		'\t\\new PianoStaff << ',
 		'\\new Staff \\staffg ',

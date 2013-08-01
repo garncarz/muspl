@@ -31,9 +31,9 @@ timeAdd(Time1, Dur, Time2) :-
 	Time1 = (Measure1, Beat1, Staff),
 	once(timeSignature(BeatsPerMeasure, _)),
 	durationToBeats(Dur, BeatsAdded),
-	BeatAdded is Beat1 + BeatsAdded,
+	BeatAdded is Beat1 - 1 + BeatsAdded,
 	Measure2 is Measure1 + floor(BeatAdded) div BeatsPerMeasure,
-	Beat2 is floor(BeatAdded) mod BeatsPerMeasure +
+	Beat2 is floor(BeatAdded) mod BeatsPerMeasure + 1 +
 		float_fractional_part(BeatAdded),
 	Time2 = (Measure2, Beat2, Staff).
 	
