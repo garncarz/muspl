@@ -2,6 +2,7 @@
 	notation/3,
 	timeSignature/2,
 	notationScale/1,
+	tempo/1,
 	
 	loadData/1,
 	saveData/1,
@@ -20,7 +21,8 @@
 :- dynamic
 	notation/3,
 	timeSignature/2,
-	notationScale/1.
+	notationScale/1,
+	tempo/1.
 
 :- use_module(aux).
 
@@ -40,7 +42,8 @@ saveData(Name) :-
 clearData :-
 	retractall(notation(_, _, _)),
 	retractall(timeSignature(_, _)),
-	retractall(notationScale(_)).
+	retractall(notationScale(_)),
+	retractall(tempo(_)).
 
 sameStaff((_, _, Staff), (_, _, Staff)).
 

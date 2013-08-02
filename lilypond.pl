@@ -76,6 +76,9 @@ unfoldDurs(Duration, Action, Result) :-
 unfoldDurs(Duration, Action, Result, Glue) :-
 	number(Duration) -> call(Action, Duration, Result);
 	Duration = [Dur1] -> call(Action, Dur1, Result);
+	(Duration = [Dur1, Dur2], Dur2 =:= Dur1 * 2,
+		string_concat(Dur1, '.', Dur),
+		call(Action, Dur, Result));
 	Duration = [Dur1 | DursRest],
 	call(Action, Dur1, Res1),
 	unfoldDurs(DursRest, Action, ResultsRest, Glue),
@@ -164,12 +167,12 @@ newBar(Item, Bar) :-
 % @param Item chord or rest
 itemLily(Item, CommentedItemLily) :- 
 	(newBar(Item, Bar) ->
-		atomic_list_concat(['\n% Bar ', Bar, ':\n'], '', Prefix);
+		atomic_list_concat(['\n% Bar ', Bar, ':\n'], Prefix);
 		Prefix = ''),
 	(voicesLily(Item, ItemLily);
 		chordLily(Item, ItemLily);
 		restLily(Item, ItemLily)),
-	atomic_list_concat([Prefix, ItemLily], '', CommentedItemLily).
+	atomic_list_concat([Prefix, ItemLily], CommentedItemLily).
 	
 
 %% staffLily(+Staff, -StaffLily)
@@ -183,13 +186,17 @@ staffLily(Staff, String) :-
 		Staff == 'f', Clef = 'bass'),
 	atomic_list_concat(['staff', Staff, ' = { \\clef ', Clef, ' \\key ',
 		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
-		'\n'], '', Header),
+		'\n'], Header1),
+	
+	(tempo(Tempo) -> atomic_list_concat([Header1, '\n\\tempo ', BeatUnit, '=',
+		Tempo, '\n'], Header);
+		Header = Header1),
 	
 	staffLine((1, 1, Staff), StaffLine),
 	maplist(itemLily, StaffLine, LilyItems),
 	atomic_list_concat(LilyItems, ' ', LilyLine),
 	
-	atomic_list_concat([Header, LilyLine, '\n}\n\n'], '', String).
+	atomic_list_concat([Header, LilyLine, '\n}\n\n'], String).
 
 % @tbd empty chord, chord's duration
 dbChordQLily(major, 5).
