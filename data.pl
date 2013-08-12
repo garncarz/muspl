@@ -15,14 +15,19 @@
 	allBeats/2,
 	allBeats/1,
 	
-	timeCmp/3
+	timeCmp/3,
+	
+	sameSongs/2,
+	songsDiff/4
 	]).
 
 :- dynamic
 	notation/3,
 	timeSignature/2,
 	notationScale/1,
-	tempo/1.
+	tempo/1,
+	
+	notationDb/4.
 
 :- use_module(aux).
 
@@ -72,4 +77,37 @@ timeCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :-
 timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :- number(Beat1), number(Beat2),
 	(compare(Delta, Bar1, Bar2), Delta \= =;
 		compare(Delta, Beat1, Beat2)), !.
+
+
+sameSongs(Song1, Song2)	:-
+	songsDiff(Song1, Song2, Surplus1, Surplus2),
+	(Surplus1 = [], Surplus2 = [], !;
+		writeln('surplus 1:'),
+		writeTree(Surplus1),
+		writeln('surplus 2:'),
+		writeTree(Surplus2),
+		fail).
+songsDiff(Song1, Song2, Surplus1, Surplus2) :-
+	retractall(notationDb(_, _, _, _)),
+	loadData(Song1),
+	mvNotation(1),
+	loadData(Song2),
+	mvNotation(2),
+	rmSameNotation,
+	findall(notation(Time, Tone, Dur), notationDb(1, Time, Tone, Dur),
+		Surplus1),
+	findall(notation(Time, Tone, Dur), notationDb(2, Time, Tone, Dur),
+		Surplus2).
+mvNotation(Db) :-
+	retract(notation(Time, Tone, Dur)),
+	assertz(notationDb(Db, Time, Tone, Dur)),
+	fail.
+mvNotation(_).
+rmSameNotation :-
+	notationDb(1, Time, Tone, Dur),
+	notationDb(2, Time, Tone, Dur),
+	retractall(notationDb(1, Time, Tone, Dur)),
+	retractall(notationDb(2, Time, Tone, Dur)),
+	fail.
+rmSameNotation.
 

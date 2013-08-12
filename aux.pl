@@ -41,19 +41,16 @@ multiAssert([]).
 
 writeTree(Tree) :-
 	writeTree(0, Tree), !.
-
 writeTree(Level, X) :-
 	writeIndent(Level),
 	ourAtom(X) -> writeln(X);
 		(X =.. [',' | Content] -> writeln('(');
 			is_list(X) -> Content = X, writeln('[')),
 		writeTreeList(Level + 1, Content).
-
 writeTreeList(_, []).
 writeTreeList(Level, [First | Rest]) :-
 	writeTree(Level, First),
 	writeTreeList(Level, Rest).
-
 writeIndent(Level) :-
 	Level > 0,
 	write('  '),
@@ -63,5 +60,6 @@ writeIndent(_).
 ourAtom(Atom) :-
 	atom(Atom);
 	number(Atom);
-	Atom = (_, _).
+	Atom = (_, _);
+	Atom =.. [notation | _].
 
