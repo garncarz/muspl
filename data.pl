@@ -29,6 +29,9 @@
 	
 	notationDb/4.
 
+:- discontiguous
+	notation/3.
+
 :- use_module(aux).
 
 :- ['data.plt'].
@@ -51,6 +54,7 @@ clearData :-
 	retractall(tempo(_)).
 
 sameStaff((_, _, Staff), (_, _, Staff)).
+isStaff(Staff, ((_, _, Staff), _, _)).
 
 retractRedundant :-
 	findall(notation(Time, Tone, Dur), notation(Time, Tone, Dur), Notation),
@@ -99,7 +103,7 @@ songsDiff(Song1, Song2, Surplus1, Surplus2) :-
 	findall(notation(Time, Tone, Dur), notationDb(2, Time, Tone, Dur),
 		Surplus2).
 mvNotation(Db) :-
-	retract(notation(Time, Tone, Dur)),
+	notation(Time, Tone, Dur),
 	assertz(notationDb(Db, Time, Tone, Dur)),
 	fail.
 mvNotation(_).
@@ -110,4 +114,27 @@ rmSameNotation :-
 	retractall(notationDb(2, Time, Tone, Dur)),
 	fail.
 rmSameNotation.
+
+
+copyBarsCond(Start, Dest, Len, Cond) :-
+	DestEnd is Dest + Len - 1,
+	between(Dest, DestEnd, Bar),
+	Bar1 is Bar - (Dest - Start),
+	notation((Bar1, Beat, Staff), Pitch, Duration),
+	call(Cond, ((Bar1, Beat, Staff), Pitch, Duration)),
+	assertz(notation((Bar, Beat, Staff), Pitch, Duration)),
+	fail.
+copyBarsCond(_, _, _, _).
+
+copyBars(Start, Dest, Len) :-
+	DestEnd is Dest + Len - 1,
+	between(Dest, DestEnd, Bar),
+	Bar1 is Bar - (Dest - Start),
+	notation((Bar1, Beat, Staff), Pitch, Duration),
+	assertz(notation((Bar, Beat, Staff), Pitch, Duration)),
+	fail.
+copyBars(_, _, _).
+
+copyBar(Start, Dest) :-
+	copyBars(Start, Dest, 1).
 
