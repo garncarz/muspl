@@ -55,6 +55,7 @@ clearData :-
 
 sameStaff((_, _, Staff), (_, _, Staff)).
 isStaff(Staff, ((_, _, Staff), _, _)).
+true(_).
 
 retractRedundant :-
 	findall(notation(Time, Tone, Dur), notation(Time, Tone, Dur), Notation),
@@ -116,25 +117,28 @@ rmSameNotation :-
 rmSameNotation.
 
 
-copyBarsCond(Start, Dest, Len, Cond) :-
+copyBars(Start, Dest, Len, Cond, Action) :-
 	DestEnd is Dest + Len - 1,
 	between(Dest, DestEnd, Bar),
 	Bar1 is Bar - (Dest - Start),
 	notation((Bar1, Beat, Staff), Pitch, Duration),
 	call(Cond, ((Bar1, Beat, Staff), Pitch, Duration)),
-	assertz(notation((Bar, Beat, Staff), Pitch, Duration)),
+	call(Action, ((Bar, Beat, Staff), Pitch, Duration),
+		((Bar2, Beat2, Staff2), Pitch2, Duration2)),
+	assertz(notation((Bar2, Beat2, Staff2), Pitch2, Duration2)),
 	fail.
-copyBarsCond(_, _, _, _).
+copyBars(_, _, _, _, _).
 
 copyBars(Start, Dest, Len) :-
-	DestEnd is Dest + Len - 1,
-	between(Dest, DestEnd, Bar),
-	Bar1 is Bar - (Dest - Start),
-	notation((Bar1, Beat, Staff), Pitch, Duration),
-	assertz(notation((Bar, Beat, Staff), Pitch, Duration)),
-	fail.
-copyBars(_, _, _).
+	copyBars(Start, Dest, Len, true, =).
 
 copyBar(Start, Dest) :-
 	copyBars(Start, Dest, 1).
+
+copyBarsCond(Start, Dest, Len, Cond) :-
+	copyBars(Start, Dest, Len, Cond, =).
+
+pitchShift(Shift, ((Bar, Beat, Staff), Pitch1, Duration),
+	((Bar, Beat, Staff), Pitch2, Duration)) :-
+	intervalDiff(Pitch1, Pitch2, Shift).
 
