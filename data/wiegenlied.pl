@@ -1,6 +1,6 @@
-notationScale((f, major)).
+extra notationScale((f, major)).
 
-timeSignature(6, 8).
+extra timeSignature(6, 8).
 % timeSignature(0, 6, 8). FIXME od jakého času platí
 
 notation((1, 1, g), (a, 1), 8).
