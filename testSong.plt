@@ -3,12 +3,12 @@
 
 clear :- clearData.
 
-ts34 :- assertz(timeSignature(3, 4)).
+ts34 :- assertz(extra timeSignature(3, 4)).
 
-ts68 :- assertz(timeSignature(6, 8)).
+ts68 :- assertz(extra timeSignature(6, 8)).
 
 testSong :- multiAssert([
-	timeSignature(6, 8),
+	extra timeSignature(6, 8),
 	
 	notation((1, 1, g), (a, 1), 8),
 	notation((1, 1, g), (f, 1), 8),

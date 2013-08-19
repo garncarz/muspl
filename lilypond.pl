@@ -178,17 +178,17 @@ itemLily(Item, CommentedItemLily) :-
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
 staffLily(Staff, String) :-
-	notationScale((Root, IntervalPattern)),
-	timeSignature(BeatsInBar, BeatUnit),
-	(Staff == 'g', Clef = 'treble';
-		Staff == 'f', Clef = 'bass';
+	extra notationScale((Root, IntervalPattern)),
+	extra timeSignature(BeatsInBar, BeatUnit),
+	(extra clef(Staff, Clef);
+		Staff == 'f' -> Clef = 'bass';
 		Clef = 'treble'),
 	atomic_list_concat(['staff', Staff, ' = { \\clef ', Clef, ' \\key ',
 		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
 		'\n'], Header1),
 	
-	(tempo(Tempo) -> atomic_list_concat([Header1, '\n\\tempo ', BeatUnit, '=',
-		Tempo, '\n'], Header);
+	(extra tempo(Tempo) -> atomic_list_concat([Header1, '\n\\tempo ', BeatUnit,
+		'=', Tempo, '\n'], Header);
 		Header = Header1),
 	
 	staffLine((1, 1, Staff), StaffLine),
@@ -197,7 +197,7 @@ staffLily(Staff, String) :-
 	
 	atomic_list_concat([Header, LilyLine, '\n}\n\n'], String).
 
-staffInstrument(Staff, Instrument) :- instrument(Staff, Instrument).
+staffInstrument(Staff, Instrument) :- extra instrument(Staff, Instrument).
 staffInstrument(_, 'acoustic grand').
 
 % @tbd empty chord, chord's duration

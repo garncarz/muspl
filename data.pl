@@ -1,9 +1,10 @@
 :- module(data, [
+	op(500, fx, extra),
+	op(500, fx, cond),
+
 	notation/3,
-	timeSignature/2,
-	notationScale/1,
-	tempo/1,
-	instrument/2,
+	extra/1,
+	cond/2,
 	
 	loadData/1,
 	saveData/1,
@@ -23,17 +24,20 @@
 	songsDiff/4
 	]).
 
+:- op(-1, fx, extra).
+:- op(-1, fx, cond).
+
 :- dynamic
 	notation/3,
-	timeSignature/2,
-	notationScale/1,
-	tempo/1,
-	instrument/2,
+	extra/1,
+	cond/2,
 	
 	notationDb/4.
 
 :- discontiguous
-	notation/3.
+	notation/3,
+	extra/1,
+	cond/2.
 
 :- use_module(aux).
 :- use_module(construction).
@@ -53,10 +57,8 @@ saveData(Name) :-
 
 clearData :-
 	retractall(notation(_, _, _)),
-	retractall(timeSignature(_, _)),
-	retractall(notationScale(_)),
-	retractall(tempo(_)),
-	retractall(instrument(_, _)).
+	retractall(extra(_)),
+	retractall(cond(_, _)).
 
 sameStaff((_, _, Staff), (_, _, Staff)).
 
