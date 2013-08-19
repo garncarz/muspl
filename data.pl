@@ -12,6 +12,7 @@
 	
 	retractRedundant,
 	
+	allStaffs/1,
 	allBeats/2,
 	allBeats/1,
 	
@@ -61,6 +62,10 @@ retractRedundant :-
 	sort(Notation, NotationSorted),
 	retractall(notation(_, _, _)),
 	multiAssert(NotationSorted).
+
+allStaffs(Staffs) :-
+	findall(Staff, notation((_, _, Staff), _, _), AllStaffsTeam),
+	sort(AllStaffsTeam, Staffs).
 
 %% allBeats(-Beats).
 %% allBeats(+Staff, -Beats).

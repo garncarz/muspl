@@ -3,6 +3,7 @@
 	inverse/2,
 	map_list/3,
 	multiAssert/1,
+	verbose/1,
 	writeTree/1
 	]).
 
@@ -38,6 +39,9 @@ multiAssert([Fact | Rest]) :-
 	multiAssert(Rest).
 multiAssert([]).
 
+verbose(Info) :-
+	write(user_output, Info),
+	nl(user_output).
 
 writeTree(Tree) :-
 	writeTree(0, Tree), !.

@@ -43,7 +43,7 @@ createAllChordsDb :-
 	aggregate_all(count, chordsDb(_), Count),
 	retractall(chordsDbMaxCount(_)),
 	asserta(chordsDbMaxCount(Count)),
-	writeln(maxCount:Count).
+	verbose(maxCount:Count).
 
 staffLine(StartTime, Line) :-
 	StartTime = (_, _, Staff),
@@ -123,7 +123,7 @@ retractChord(Chord) :-
 	chordsDb(Chord),
 	retractall(chordsDb(Chord)),
 	aggregate_all(count, chordsDb(_), Count),
-	(Count mod 100 =:= 0 -> writeln(count:Count); true).
+	(Count mod 100 =:= 0 -> verbose(count:Count); true).
 
 conflictChords(Chord1, Chord2) :-
 	Chord1 \= Chord2,
@@ -183,7 +183,8 @@ staffLily(Staff, String) :-
 	notationScale((Root, IntervalPattern)),
 	timeSignature(BeatsInBar, BeatUnit),
 	(Staff == 'g', Clef = 'treble';
-		Staff == 'f', Clef = 'bass'),
+		Staff == 'f', Clef = 'bass';
+		Clef = 'treble'),
 	atomic_list_concat(['staff', Staff, ' = { \\clef ', Clef, ' \\key ',
 		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
 		'\n'], Header1),
@@ -256,31 +257,31 @@ symbolChordsLily(String) :-
 %% exportLy(+Filename)
 % Exports notation into a Lilypond file.
 exportLy(Filename) :-
-	createAllChordsDb,
-	
-	symbolChordsLily(SymChords),
-	staffLily(g, StaffG),
-	staffLily(f, StaffF),
-	
 	tell(Filename),
-	maplist(write, [
-		'\\version "2.16.1"\n\n',
-		SymChords,
-		StaffG,
-		StaffF,
-		'\\score { <<\n',
-		'\t\\new ChordNames { \\set chordChanges = ##t \\symChords }\n',
-		'\t\\new PianoStaff << ',
-		'\\new Staff \\staffg ',
-		'\\new Staff \\stafff >>',
-		'\n>>\n\\layout { }\n}\n\n',
-		'\\score { <<\n',
-		'\t% \\new Staff { \\set Staff.midiInstrument = #"church organ" ',
-			'\\symChords}\n',
-		'\t\\new PianoStaff << ',
-		'\\new Staff \\staffg ',
-		'\\new Staff \\stafff >>',
-		'\n>>\n\\midi { }\n}\n\n'
-	]),
+	write('\\version "2.16.1"\n\n'),
+
+	createAllChordsDb,
+	symbolChordsLily(SymChords),
+	write(SymChords),
+	
+	allStaffs(Staffs),
+	forall(member(Staff, Staffs),
+		(staffLily(Staff, StaffLily), write(StaffLily))),
+	
+	write('\\score { <<\n'),
+	write('\\new ChordNames { \\set chordChanges = ##t \\symChords }\n'),
+	forall(member(Staff, Staffs),
+		(atomic_list_concat(['\\new Staff \\staff', Staff, '\n'], String),
+		write(String))),
+	write('>>\n\\layout { }\n}\n\n'),
+	
+	write('\\score { <<\n'),
+	write('% \\new Staff { \\set Staff.midiInstrument = #"church organ" \c
+			\\symChords }\n'),
+	forall(member(Staff, Staffs),
+		(atomic_list_concat(['\\new Staff \\staff', Staff, '\n'], String),
+		write(String))),
+	write('>>\n\\midi { }\n}\n\n'),
+	
 	told, !.
 
