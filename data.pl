@@ -3,6 +3,7 @@
 	timeSignature/2,
 	notationScale/1,
 	tempo/1,
+	instrument/2,
 	
 	loadData/1,
 	saveData/1,
@@ -27,6 +28,7 @@
 	timeSignature/2,
 	notationScale/1,
 	tempo/1,
+	instrument/2,
 	
 	notationDb/4.
 
@@ -53,7 +55,8 @@ clearData :-
 	retractall(notation(_, _, _)),
 	retractall(timeSignature(_, _)),
 	retractall(notationScale(_)),
-	retractall(tempo(_)).
+	retractall(tempo(_)),
+	retractall(instrument(_, _)).
 
 sameStaff((_, _, Staff), (_, _, Staff)).
 
@@ -63,9 +66,14 @@ retractRedundant :-
 	retractall(notation(_, _, _)),
 	multiAssert(NotationSorted).
 
+staffCmp(Delta, Staff1, Staff2) :-
+	Sorted = [v, g, f, b],
+	nth0(Index1, Sorted, Staff1),
+	nth0(Index2, Sorted, Staff2),
+	compare(Delta, Index1, Index2).
 allStaffs(Staffs) :-
 	findall(Staff, notation((_, _, Staff), _, _), AllStaffsTeam),
-	sort(AllStaffsTeam, Staffs).
+	predsort(staffCmp, AllStaffsTeam, Staffs).
 
 %% allBeats(-Beats).
 %% allBeats(+Staff, -Beats).

@@ -38,8 +38,8 @@ createAllChordsDb(Staff) :-
 	foreach(member(Chord, Chords), assertz(chordsDb(Chord))).
 createAllChordsDb :-
 	retractall(chordsDb(_)),
-	createAllChordsDb(g),
-	createAllChordsDb(f),
+	allStaffs(Staffs),
+	forall(member(Staff, Staffs), createAllChordsDb(Staff)),
 	aggregate_all(count, chordsDb(_), Count),
 	retractall(chordsDbMaxCount(_)),
 	asserta(chordsDbMaxCount(Count)),
@@ -177,8 +177,6 @@ itemLily(Item, CommentedItemLily) :-
 
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
-%
-% @param Staff Possible values: =g= or =f=
 staffLily(Staff, String) :-
 	notationScale((Root, IntervalPattern)),
 	timeSignature(BeatsInBar, BeatUnit),
@@ -198,6 +196,9 @@ staffLily(Staff, String) :-
 	atomic_list_concat(LilyItems, ' ', LilyLine),
 	
 	atomic_list_concat([Header, LilyLine, '\n}\n\n'], String).
+
+staffInstrument(Staff, Instrument) :- instrument(Staff, Instrument).
+staffInstrument(_, 'acoustic grand').
 
 % @tbd empty chord, chord's duration
 dbChordQLily(major, 5).
@@ -279,7 +280,9 @@ exportLy(Filename) :-
 	write('% \\new Staff { \\set Staff.midiInstrument = #"church organ" \c
 			\\symChords }\n'),
 	forall(member(Staff, Staffs),
-		(atomic_list_concat(['\\new Staff \\staff', Staff, '\n'], String),
+		(staffInstrument(Staff, Instrument),
+		atomic_list_concat(['\\new Staff { \\set Staff.midiInstrument = #"',
+			Instrument, '" \\staff', Staff, ' }\n'], String),
 		write(String))),
 	write('>>\n\\midi { }\n}\n\n'),
 	
