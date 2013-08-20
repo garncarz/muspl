@@ -1,4 +1,9 @@
-:- module(ultrastar, [exportUS/2]).
+:- module(ultrastar, [
+	exportUS/3,
+	loadLyrics/2
+	]).
+
+:- use_module(aux).
 
 pitchValue(Tone, Value) :-
 	intervalDiff((c, 1), Tone, Diff),
@@ -7,24 +12,32 @@ pitchValue(Tone, Value) :-
 usTime(Time, USTime) :-
 	USTime is round(Time * 2).
 
-noteElement((Start, DurInBeats, Pitch, Lyrics)) :-
-	notation((Bar, Beat, v), Tone, Dur),
-	Tone \= r,
-	timeDiff((1, 1), (Bar, Beat), Start1),
-	durationToBeats(Dur, DurInBeats1),
+
+processElements(Notes, [eol | LyricsRest], LastStart) :-
+	maplist(write, ['- ', LastStart, '\n']),
+	processElements(Notes, LyricsRest, LastStart).
+processElements(Notes, Lyrics, _) :-
+	Notes = [(Bar, Beat, Tone, Dur) | NotesRest],
+	Lyrics = [syl(Syllable) | LyricsRest],
 	
+	timeDiff((1, 1), (Bar, Beat), Start1),
 	usTime(Start1, Start),
+	
+	durationToBeats(Dur, DurInBeats1),
 	usTime(DurInBeats1, DurInBeats),
 	
 	pitchValue(Tone, Pitch),
-	Lyrics = 'la'.
-
-writeElement((Start, DurInBeats, Pitch, Lyrics)) :-
+	
 	maplist(write, [
-		': ', Start, ' ', DurInBeats, ' ', Pitch, ' ', Lyrics, '\n']).
+		': ', Start, ' ', DurInBeats, ' ', Pitch, ' ', Syllable, '\n']),
+	
+	processElements(NotesRest, LyricsRest, Start).
+processElements([], [], _).
+processElements(Notes, Lyrics, LastStart) :-
+	verbose(notClean:(Notes, Lyrics, LastStart)).
 
 
-exportUS(Filename, Audioname) :-
+exportUS(Filename, Audioname, Lyrics) :-
 	tell(Filename),
 	
 	extra title(Title),
@@ -40,9 +53,43 @@ exportUS(Filename, Audioname) :-
 		'#BPM:', USTempo, '\n'
 		]),
 	
-	forall(noteElement(Element), writeElement(Element)),
+	findall((Bar, Beat, Tone, Dur),
+		(notation((Bar, Beat, v), Tone, Dur), Tone \= r),
+		Notes),
+	
+	processElements(Notes, Lyrics, 0),
 	
 	write('E'),
 	
 	told, !.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LYRICS:
+
+:- use_module(library(pio)).
+:- use_module(library(dcg/basics)).
+
+underscore --> "_".
+underscores --> underscore, !, underscores.
+underscores --> [].
+elem(syl(~)) --> whites, underscore.
+elem(syl(Syl)) -->
+	whites,
+	string_without(" -_\n", Core),
+	(underscores; []),
+	("-", { Space = '' };
+		white, { Space = ' ' };
+		[], { Space = '' }),
+	{ Core \= [],
+		string_to_atom(Core, CoreAtom),
+		atomic_list_concat([CoreAtom, Space], Syl)
+	}.
+elem(eol) --> "\n".
+
+lyrics([Elem | Rest]) --> elem(Elem), lyrics(Rest).
+lyrics([]) --> [].
+
+loadLyrics(Filename, Lyrics) :-
+	phrase_from_file(lyrics(Lyrics), Filename), !.
+	
