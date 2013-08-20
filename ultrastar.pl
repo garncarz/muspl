@@ -13,11 +13,20 @@ usTime(Time, USTime) :-
 	USTime is round(Time * 2).
 
 
-processElements(Notes, [eol | LyricsRest], LastStart) :-
-	maplist(write, ['- ', LastStart, '\n']),
-	processElements(Notes, LyricsRest, LastStart).
+processElements([], [], _).
+processElements([], [eol], _).
+processElements(Notes, [eol | LyricsRest], LastEnd) :-
+	Notes = [((Bar, Beat), _, _) | _],
+	timeDiff((1, 1), (Bar, Beat), Start1),
+	usTime(Start1, Start),
+	
+	ChangeTime is round((LastEnd + Start) / 2),
+
+	maplist(write, ['- ', ChangeTime, '\n']),
+	
+	processElements(Notes, LyricsRest, ChangeTime).
 processElements(Notes, Lyrics, _) :-
-	Notes = [(Bar, Beat, Tone, Dur) | NotesRest],
+	Notes = [((Bar, Beat), Tone, Dur) | NotesRest],
 	Lyrics = [syl(Syllable) | LyricsRest],
 	
 	timeDiff((1, 1), (Bar, Beat), Start1),
@@ -31,10 +40,10 @@ processElements(Notes, Lyrics, _) :-
 	maplist(write, [
 		': ', Start, ' ', DurInBeats, ' ', Pitch, ' ', Syllable, '\n']),
 	
-	processElements(NotesRest, LyricsRest, Start).
-processElements([], [], _).
-processElements(Notes, Lyrics, LastStart) :-
-	verbose(notClean:(Notes, Lyrics, LastStart)).
+	EndTime is Start + DurInBeats,
+	processElements(NotesRest, LyricsRest, EndTime).
+processElements(Notes, Lyrics, LastEnd) :-
+	verbose(notClean:(Notes, Lyrics, LastEnd)).
 
 
 exportUS(Filename, Audioname, Lyrics) :-
@@ -53,9 +62,10 @@ exportUS(Filename, Audioname, Lyrics) :-
 		'#BPM:', USTempo, '\n'
 		]),
 	
-	findall((Bar, Beat, Tone, Dur),
+	findall(((Bar, Beat), Tone, Dur),
 		(notation((Bar, Beat, v), Tone, Dur), Tone \= r),
-		Notes),
+		Notes1),
+	predsort(timeCmp, Notes1, Notes),
 	
 	processElements(Notes, Lyrics, 0),
 	

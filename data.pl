@@ -96,6 +96,8 @@ timeCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :-
 timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :- number(Beat1), number(Beat2),
 	(compare(Delta, Bar1, Bar2), Delta \= =;
 		compare(Delta, Beat1, Beat2)), !.
+timeCmp(Delta, (Time1, _, _), (Time2, _, _)) :-
+	timeCmp(Delta, Time1, Time2).
 
 
 sameSongs(Song1, Song2)	:-
