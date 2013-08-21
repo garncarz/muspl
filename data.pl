@@ -24,8 +24,7 @@
 	songsDiff/4
 	]).
 
-:- op(-1, fx, extra).
-:- op(-1, fx, cond).
+:- op(-1, fx, extra), op(-1, fx, cond).
 
 :- dynamic
 	notation/3,
@@ -39,6 +38,8 @@
 	extra/1,
 	cond/2.
 
+:- op(500, fx, extra), op(500, fx, cond).
+
 :- use_module(aux).
 :- use_module(construction).
 
@@ -46,8 +47,18 @@
 
 loadData(Name) :-
 	clearData,
-	atomic_list_concat(['data/', Name, '.pl'], Filename),
-	consult(Filename).
+	directory_file_path(Dir1, File1, Name),
+	atomic_list_concat(['data/', Dir1], Dir2),
+	absolute_file_name(Dir2, DataDir),
+	working_directory(StartDir, DataDir),
+	atomic_list_concat([File1, '.pl'], Filename),
+	consult(Filename),
+	working_directory(_, StartDir).
+
+loadLyrics(Staff, LyricsName) :-
+	open(LyricsName, read, Stream, []),
+	read_stream_to_codes(Stream, Lyrics),
+	assertz(extra lyrics(Staff, Lyrics)).
 
 saveData(Name) :-
 	atomic_list_concat(['data/', Name, '.pl'], Filename),

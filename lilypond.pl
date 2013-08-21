@@ -183,7 +183,7 @@ staffLily(Staff, String) :-
 	(extra clef(Staff, Clef);
 		Staff == 'f' -> Clef = 'bass';
 		Clef = 'treble'),
-	atomic_list_concat(['staff', Staff, ' = { \\clef ', Clef, ' \\key ',
+	atomic_list_concat(['{ \\clef ', Clef, ' \\key ',
 		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
 		'\n'], Header1),
 	
@@ -195,7 +195,14 @@ staffLily(Staff, String) :-
 	maplist(itemLily, StaffLine, LilyItems),
 	atomic_list_concat(LilyItems, ' ', LilyLine),
 	
-	atomic_list_concat([Header, LilyLine, '\n}\n\n'], String).
+	atomic_list_concat([Header, LilyLine, '\n}\n'], String1),
+	
+	(extra lyrics(Staff, Lyrics) ->
+		string_to_atom(Lyrics, LyricsAtom),
+		atomic_list_concat(['staff', Staff, ' = <<\n', String1,
+			'\\addlyrics {\n', LyricsAtom, '}\n>>\n\n'], String);
+	atomic_list_concat(['staff', Staff, ' = ', String1, '\n'], String)).
+	
 
 staffInstrument(Staff, Instrument) :- extra instrument(Staff, Instrument).
 staffInstrument(_, 'acoustic grand').

@@ -1,9 +1,7 @@
-:- module(ultrastar, [
-	exportUS/3,
-	loadLyrics/2
-	]).
+:- module(ultrastar, [exportUS/2]).
 
 :- use_module(aux).
+:- use_module(data).
 
 pitchValue(Tone, Value) :-
 	intervalDiff((c, 1), Tone, Diff),
@@ -11,7 +9,8 @@ pitchValue(Tone, Value) :-
 
 usTime(Time, USTime) :-
 	USTime is round(Time * 2).
-
+usDur(Dur, USDur) :-
+	USDur is round(Dur * 1.1).
 
 processElements([], [], _).
 processElements([], [eol], _).
@@ -33,7 +32,7 @@ processElements(Notes, Lyrics, _) :-
 	usTime(Start1, Start),
 	
 	durationToBeats(Dur, DurInBeats1),
-	usTime(DurInBeats1, DurInBeats),
+	usDur(DurInBeats1, DurInBeats),
 	
 	pitchValue(Tone, Pitch),
 	
@@ -46,7 +45,7 @@ processElements(Notes, Lyrics, LastEnd) :-
 	verbose(notClean:(Notes, Lyrics, LastEnd)).
 
 
-exportUS(Filename, Audioname, Lyrics) :-
+exportUS(Filename, Audioname) :-
 	tell(Filename),
 	
 	extra title(Title),
@@ -67,6 +66,9 @@ exportUS(Filename, Audioname, Lyrics) :-
 		Notes1),
 	predsort(timeCmp, Notes1, Notes),
 	
+	extra lyrics(v, LyricsStream),
+	phrase(lyrics(Lyrics), LyricsStream),
+	
 	processElements(Notes, Lyrics, 0),
 	
 	write('E'),
@@ -77,20 +79,21 @@ exportUS(Filename, Audioname, Lyrics) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LYRICS:
 
-:- use_module(library(pio)).
 :- use_module(library(dcg/basics)).
 
 underscore --> "_".
 underscores --> underscore, !, underscores.
 underscores --> [].
+
 elem(syl(~)) --> whites, underscore.
-elem(syl(Syl)) -->
+elem(syl(Syl)), Ahead -->
 	whites,
 	string_without(" -_\n", Core),
 	(underscores; []),
-	("-", { Space = '' };
-		white, { Space = ' ' };
-		[], { Space = '' }),
+	("-", { Space = '', Ahead = [] };
+		whites, "_", { Space = '', Ahead = "_" };
+		white, { Space = ' ', Ahead = [] };
+		[], { Space = '', Ahead = [] }),
 	{ Core \= [],
 		string_to_atom(Core, CoreAtom),
 		atomic_list_concat([CoreAtom, Space], Syl)
@@ -100,6 +103,3 @@ elem(eol) --> "\n".
 lyrics([Elem | Rest]) --> elem(Elem), lyrics(Rest).
 lyrics([]) --> [].
 
-loadLyrics(Filename, Lyrics) :-
-	phrase_from_file(lyrics(Lyrics), Filename), !.
-	

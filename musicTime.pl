@@ -12,6 +12,7 @@
 	]).
 
 :- use_module(aux).
+:- use_module(data).
 :- use_module(symbolChords).
 
 :- ['musicTime.plt'].

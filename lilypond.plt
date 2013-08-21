@@ -1,6 +1,6 @@
 :- begin_tests(lilypond, [setup(clear), cleanup(clear)]).
 
-:- include('testSong.plt').
+:- ['testSong.plt'].
 
 test(pitchLily) :-
 	pitchLily((des, 2), L1), L1 == 'des\'\'',
