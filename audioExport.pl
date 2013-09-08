@@ -1,36 +1,33 @@
-:- module(audioExport, [exportWav/1]).
+:- module(audioExport, [exportWav/2, sampleRate/1]).
 
 numChannels(1).
 sampleRate(44100).
-bitsPerSample(8).
+% sampleRate(8000).
+bitsPerSample(24).
+
+bytesCount(BytesCount) :-
+	bitsPerSample(BitsPerSample),
+	BytesCount is BitsPerSample / 8.
 
 % see https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
 
 writeChar(Char) :- put_char(wav, Char).
 writeByte(Byte) :- put_byte(wav, Byte).
 bytePart(X, Part, Byte) :-
-	Byte is (X /\ (255 << (Part * 8))) >> (Part * 8).
-writeWord(Word) :-
-	bytePart(Word, 1, Byte2),
-	bytePart(Word, 0, Byte1),
-	writeByte(Byte1),
-	writeByte(Byte2).
-writeDWord(DWord) :-
-	bytePart(DWord, 3, Byte4),
-	bytePart(DWord, 2, Byte3),
-	bytePart(DWord, 1, Byte2),
-	bytePart(DWord, 0, Byte1),
-	writeByte(Byte1),
-	writeByte(Byte2),
-	writeByte(Byte3),
-	writeByte(Byte4).
+	Shift is (Part - 1) * 8,
+	Byte is (X /\ (255 << Shift)) >> Shift.
+writeWord(Word, Size) :-
+	forall(between(1, Size, Part),
+		(bytePart(Word, Part, Byte),
+		writeByte(Byte))).
+writeWord(Word) :- writeWord(Word, 2).
+writeDWord(DWord) :- writeWord(DWord, 4).
 writeString(String) :-
 	forall(member(Char, String), writeChar(Char)).
 writeSample(Sample) :-
-	bitsPerSample(BitsPerSample),
-	BitsPerSample = 8,
-	SampleByte is truncate((Sample + 1) * 128),
-	writeByte(SampleByte).
+	bytesCount(BytesCount),
+	SampleWord is truncate(Sample * 255 ** BytesCount),
+	writeWord(SampleWord, BytesCount).
 
 
 writeRiffHeader :-
@@ -59,22 +56,18 @@ writeDataSubchunkHeader :-
 	writeDWord(0). % TODO change in the end
 
 
-writeTestSineData :-
-	sampleRate(SampleRate),
-	forall((MaxTime is SampleRate * 500,
-		between(0, MaxTime, Time),
-		Data is sin(2 * pi * Time / SampleRate * 500)),
-		writeSample(Data)).
+writeSamples(Samples) :-
+	forall(member(Sample, Samples), writeSample(Sample)).
 
 
-exportWav(Filename) :-
+exportWav(Filename, Samples) :-
 	open(Filename, write, File, [type(binary), alias(wav)]),
 	
 	writeRiffHeader,
 	writeFmtSubchunk,
 	writeDataSubchunkHeader,
 	
-	writeTestSineData,
+	writeSamples(Samples),
 	
 	close(File).
 

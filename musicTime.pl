@@ -21,17 +21,22 @@ simpleTime(Time, (Bar, Beat)) :-
 	once((Time = (Bar, Beat, _Staff);
 		Time = (Bar, Beat))).
 
+
+timeSignature(BeatsPerMeasure, NoteDuration) :-
+	once((extra timeSignature(BeatsPerMeasure, NoteDuration);
+		BeatsPerMeasure = 4, NoteDuration = 4)).
+
 %% timeDiff(+Time1, +Time2, -Diff)
 % True if Time2 - Time1 = Diff in beats.
 timeDiff(Time1, Time2, Diff) :-
 	simpleTime(Time1, (Measure1, Beat1)),
 	simpleTime(Time2, (Measure2, Beat2)),
-	once(extra timeSignature(BeatsPerMeasure, _)),
+	timeSignature(BeatsPerMeasure, _),
 	Diff is (Measure2 - Measure1) * BeatsPerMeasure + Beat2 - Beat1.
 
 timeAdd(Time1, Dur, Time2) :-
 	Time1 = (Measure1, Beat1, Staff),
-	once(extra timeSignature(BeatsPerMeasure, _)),
+	timeSignature(BeatsPerMeasure, _),
 	durationToBeats(Dur, BeatsAdded),
 	BeatAdded is Beat1 - 1 + BeatsAdded,
 	Measure2 is Measure1 + floor(BeatAdded) div BeatsPerMeasure,
@@ -44,7 +49,7 @@ timeAdd(Time1, Dur, Time2) :-
 % True if Duration(s) take Beats of beats.
 durationToBeats(Duration, Beats) :-
 	number(Duration),
-	extra timeSignature(_, NoteDuration),
+	timeSignature(_, NoteDuration),
 	Beats is NoteDuration / Duration.
 durationToBeats([], 0).
 durationToBeats([Duration | Rest], Beats) :-
@@ -54,7 +59,7 @@ durationToBeats([Duration | Rest], Beats) :-
 
 beatsToDuration(Beats, Duration) :-
 	number(Beats), Beats > 0,
-	extra timeSignature(_, NoteDuration),
+	timeSignature(_, NoteDuration),
 	FloatDuration is NoteDuration / Beats,
 	normalizedDuration(FloatDuration, Duration).
 
@@ -106,7 +111,7 @@ afterEndBeat(EndBeat) :-
 	maplist(first, Beats, Measures),
 	max_list(Measures, MaxMeasure),
 	
-	once(extra timeSignature(BeatsPerMeasure, _)),
+	timeSignature(BeatsPerMeasure, _),
 	AfterBeat is BeatsPerMeasure + 1,
 	
 	EndBeat = (MaxMeasure, AfterBeat).
