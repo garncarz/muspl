@@ -1,4 +1,4 @@
-:- module(ultrastar, [exportUS/2]).
+:- module(ultrastar, [exportUS/1]).
 
 :- use_module(aux).
 :- use_module(data).
@@ -45,7 +45,10 @@ processElements(Notes, Lyrics, LastEnd) :-
 	verbose(notClean:(Notes, Lyrics, LastEnd)).
 
 
-exportUS(Filename, Audioname) :-
+exportUS(Name) :-
+	atomic_concat(Name, '.usd', Filename),
+	atomic_concat(Name, '.ogg', Audioname),
+
 	tell(Filename),
 	
 	extra title(Title),

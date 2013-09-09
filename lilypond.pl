@@ -207,6 +207,9 @@ staffLily(Staff, String) :-
 staffInstrument(Staff, Instrument) :- extra instrument(Staff, Instrument).
 staffInstrument(_, 'acoustic grand').
 
+staffInstrumentName(Staff, Name, ShortName) :-
+	extra instrumentName(Staff, Name, ShortName).
+
 % @tbd empty chord, chord's duration
 dbChordQLily(major, 5).
 dbChordQLily(minor, m).
@@ -262,24 +265,43 @@ symbolChordsLily(String) :-
 		String).
 
 
+writeHeader :-
+	extra title(Title),
+	extra composer(Composer),
+	
+	maplist(write, [
+		'\\header {\n',
+		'\ttitle = "', Title, '"\n',
+		'\tcomposer = "', Composer, '"\n',
+		'}\n\n'
+		]).
+
 %% exportLy(+Filename)
 % Exports notation into a Lilypond file.
 exportLy(Filename) :-
 	tell(Filename),
 	write('\\version "2.16.1"\n\n'),
+	
+	(writeHeader; true),
 
 	createAllChordsDb,
-	symbolChordsLily(SymChords),
-	write(SymChords),
+	%symbolChordsLily(SymChords),
+	%write(SymChords),
 	
 	allStaffs(Staffs),
 	forall(member(Staff, Staffs),
 		(staffLily(Staff, StaffLily), write(StaffLily))),
 	
 	write('\\score { <<\n'),
-	write('\\new ChordNames { \\set chordChanges = ##t \\symChords }\n'),
+	%write('\\new ChordNames { \\set chordChanges = ##t \\symChords }\n'),
 	forall(member(Staff, Staffs),
-		(atomic_list_concat(['\\new Staff \\staff', Staff, '\n'], String),
+		((staffInstrumentName(Staff, Name, ShortName) ->
+			atomic_list_concat(['\\set Staff.instrumentName = "', Name,
+				'" \\set Staff.shortInstrumentName = "', ShortName, '" '],
+				InstrString)
+			; InstrString = ''),
+		atomic_list_concat(['\\new Staff { ', InstrString, '\\staff', Staff,
+			' }\n'], String),
 		write(String))),
 	write('>>\n\\layout { }\n}\n\n'),
 	

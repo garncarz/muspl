@@ -1,3 +1,6 @@
+extra title('Schlafe, mein Prinzchen, schlaf ein').
+extra composer('Bernhard Flies').
+
 extra notationScale((f, major)).
 
 extra timeSignature(6, 8).
