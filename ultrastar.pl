@@ -52,7 +52,7 @@ exportUS(Name) :-
 	tell(Filename),
 	
 	extra title(Title),
-	extra artist(Artist),
+	(extra artist(Artist); extra composer(Artist)),
 	extra tempo(Tempo),
 	
 	USTempo is round(Tempo / 2),
