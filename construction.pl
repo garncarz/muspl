@@ -48,5 +48,7 @@ true(_).
 
 pitchShift(Shift, ((Bar, Beat, Staff), Pitch1, Duration),
 	((Bar, Beat, Staff), Pitch2, Duration)) :-
-	intervalDiff(Pitch1, Pitch2, Shift).
+	once((intervalDiff(Pitch1, Pitch2, Shift);
+		Pitch2 = Pitch1
+		)).
 
