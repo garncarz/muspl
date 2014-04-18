@@ -9,7 +9,8 @@
 % Prints standard chords from the Scale.
 stdChords(Scale) :-
 	harmonicFuncChord(Scale, Func, ChordTones),
+	harmonicFuncSymb(Func, Symb),
 	once((symbolChord(Chord, ChordTones))),
-	writeln(Func:Chord),
+	format('~t~w~4| ~w~n', [Symb, Chord]),
 	fail; true.
 

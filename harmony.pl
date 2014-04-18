@@ -1,4 +1,5 @@
 :- module(harmony, [
+	harmonicFuncSymb/2,
 	harmonicFuncChord/3
 	]).
 
@@ -7,10 +8,18 @@
 
 :- ['harmony.plt'].
 
+%% harmonicFuncSymb(-Func, -Symbol)
+harmonicFuncSymb(1, 'T').
+harmonicFuncSymb(2, 'II').
+harmonicFuncSymb(3, 'III').
+harmonicFuncSymb(4, 'S').
+harmonicFuncSymb(5, 'D').
+harmonicFuncSymb(6, 'VI').
+harmonicFuncSymb(7, 'VII').
+
 %% possibleFunc(-Func)
 % Func is a possible harmonic function.
-possibleFunc(Func) :-
-	between(1, 7, Func).
+possibleFunc(Func) :- harmonicFuncSymb(Func, _).
 
 %% harmonicFunc(-Func, -Members)
 % Harmonic function Func has tones from scale relatively determined by Members.

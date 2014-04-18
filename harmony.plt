@@ -1,5 +1,11 @@
 :- begin_tests(harmony).
 
+test(harmonicFuncSymb) :-
+	harmonicFuncSymb(2, Symb1), Symb1 == 'II',
+	harmonicFuncSymb(Func2, 'D'), Func2 == 5,
+	not(harmonicFuncSymb(10, _)),
+	not(harmonicFuncSymb(_, 'abc')).
+
 test(possibleFunc, [nondet]) :-
 	possibleFunc(Func1), Func1 == 3,
 	not(possibleFunc(12)).
