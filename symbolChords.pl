@@ -1,4 +1,5 @@
 :- module(symbolChords, [
+	symbolChord/2,
 	probSymbolChord/2
 	]).
 

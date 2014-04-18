@@ -1,4 +1,6 @@
-:- module(harmony, []).
+:- module(harmony, [
+	harmonicFuncChord/3
+	]).
 
 :- use_module(basics).
 :- use_module(scales).
