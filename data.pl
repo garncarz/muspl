@@ -8,11 +8,11 @@
 	
 	loadData/1,
 	saveData/1,
-	clearData,
+	clearData/0,
 	
 	sameStaff/2,
 	
-	retractRedundant,
+	retractRedundant/0,
 	
 	allStaffs/1,
 	allBeats/2,
@@ -71,7 +71,8 @@ clearData :-
 	retractall(extra(_)),
 	retractall(cond(_, _)).
 
-sameStaff((_, _, Staff), (_, _, Staff)).
+sameStaff(Time1, Time2) :-
+	Time1.staff = Time2.staff.
 
 retractRedundant :-
 	findall(notation(Time, Tone, Dur), notation(Time, Tone, Dur), Notation),
@@ -94,20 +95,21 @@ allStaffs(Staffs) :-
 %
 % @tbd All Beats (including exceeded) should be included.
 allBeats(Beats) :-
-	findall((Bar, Beat), notation((Bar, Beat, _), _, _), Starts),
+	findall(Time, notation(Time, _, _), Starts),
 	predsort(timeCmp, Starts, Beats).
 allBeats(Staff, Beats) :-
-	findall((Bar, Beat, Staff), notation((Bar, Beat, Staff), _, _), Starts),
+	findall(Time, (notation(Time, _, _), time{staff:Staff} :< Time), Starts),
 	predsort(timeCmp, Starts, Beats).
 
 %% timeCmp(-Delta, +Time1, +Time2)
 % True if Time1 compared to Time2 is Delta.
-timeCmp(Delta, (Bar1, Beat1, Staff), (Bar2, Beat2, Staff)) :-
-	timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)), !.
-timeCmp(Delta, (Bar1, Beat1), (Bar2, Beat2)) :- number(Beat1), number(Beat2),
-	(compare(Delta, Bar1, Bar2), Delta \= =;
-		compare(Delta, Beat1, Beat2)), !.
-timeCmp(Delta, (Time1, _, _), (Time2, _, _)) :-
+timeCmp(Delta, Time1, Time2) :-
+	%(time{staff:Staff1} :< Time1, time{staff:Staff2} :< Time2 ->
+	%	Staff1 = Staff2; true),  % TODO is it necessary?
+	(compare(Delta, Time1.bar, Time2.bar), Delta \= =;
+		compare(Delta, Time1.beat, Time2.beat)), !.
+timeCmp(Delta, Elem1, Elem2) :-
+	_{time:Time1} :< Elem1, _{time:Time2} :< Elem2,
 	timeCmp(Delta, Time1, Time2).
 
 

@@ -1,5 +1,4 @@
 :- module(musicTime, [
-	simpleTime/2,
 	timeDiff/3,
 	timeAdd/3,
 	durationToBeats/2,
@@ -17,11 +16,6 @@
 
 :- ['musicTime.plt'].
 
-simpleTime(Time, (Bar, Beat)) :-
-	once((Time = (Bar, Beat, _Staff);
-		Time = (Bar, Beat))).
-
-
 timeSignature(BeatsPerMeasure, NoteDuration) :-
 	once((extra timeSignature(BeatsPerMeasure, NoteDuration);
 		BeatsPerMeasure = 4, NoteDuration = 4)).
@@ -29,10 +23,9 @@ timeSignature(BeatsPerMeasure, NoteDuration) :-
 %% timeDiff(+Time1, +Time2, -Diff)
 % True if Time2 - Time1 = Diff in beats.
 timeDiff(Time1, Time2, Diff) :-
-	simpleTime(Time1, (Measure1, Beat1)),
-	simpleTime(Time2, (Measure2, Beat2)),
 	timeSignature(BeatsPerMeasure, _),
-	Diff is (Measure2 - Measure1) * BeatsPerMeasure + Beat2 - Beat1.
+	Diff is (Time2.bar - Time1.bar) * BeatsPerMeasure
+		+ Time2.beat - Time1.beat.
 
 timeAdd(Time1, Dur, Time2) :-
 	Time1 = (Measure1, Beat1, Staff),

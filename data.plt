@@ -1,19 +1,21 @@
 :- begin_tests(data).
 
 test(sameStaff) :-
-	sameStaff((4, 1, f), (6, 2, f)),
-	not(sameStaff((4, 1, f), (6, 2, g))).
+	sameStaff(time{bar:4, beat:1, staff:f}, time{bar:6, beat:2, staff:f}),
+	not(sameStaff(time{bar:4, beat:1, staff:f}, time{bar:6, beat:2, staff:g})).
 
 test(timeCmp1) :-
-	timeCmp(D1, (3, 2), (4, 1)), D1 == '<',
-	timeCmp(D2, (10, 3), (10, 3)), D2 == '=',
-	timeCmp(D3, (3, 2), (2, 5)), D3 == '>'.
+	timeCmp(<, time{bar:3, beat:2}, time{bar:4, beat:1}),
+	timeCmp(=, time{bar:10, beat:3}, time{bar:10, beat:3}),
+	timeCmp(>, time{bar:3, beat:2}, time{bar:2, beat:5}).
 test(timeCmp2) :-
-	timeCmp(D1, (3, 2, g), (4, 1, g)), D1 == '<',
-	timeCmp(D2, (10, 3, g), (10, 3, g)), D2 == '=',
-	timeCmp(D3, (3, 2, g), (2, 5, g)), D3 == '>'.
-test(timeCmp2Fail, [fail]) :-
-	timeCmp(_, (1, 1, g), (1, 1, f)).
+	timeCmp(<, time{bar:3, beat:2, staff:g}, time{bar:4, beat:1, staff:g}),
+	timeCmp(=, time{bar:10, beat:3, staff:g}, time{bar:10, beat:3, staff:g}),
+	timeCmp(>, time{bar:3, beat:2, staff:g}, time{bar:2, beat:5, staff:g}).
+
+% TODO delete?
+%test(timeCmp2Fail, [fail]) :-
+%	timeCmp(_, time{bar:1, beat:1, staff:g}, time{bar:1, beat:1, staff:f}).
 
 :- end_tests(data).
 
