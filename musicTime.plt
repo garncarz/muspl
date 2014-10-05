@@ -6,8 +6,8 @@ test(timeDiff1, [setup(ts34), cleanup(clear)]) :-
 	timeDiff(time{bar:10, beat:2}, time{bar:9, beat:1}, Diff), Diff == -4,
 	timeDiff(time{bar:9, beat:1}, time{bar:9, beat:1}, Diff2), Diff2 == 0.
 test(timeDiff2, [setup(ts68), cleanup(clear)]) :-
-	timeDiff(time{bar:9, beat:1}, time{bar:10, beat:2}, Diff}, Diff == 7,
-	timeDiff(time{bar:2, beat:2}, time{bar:4, beat:1}, Diff2}, Diff2 == 11.
+	timeDiff(time{bar:9, beat:1}, time{bar:10, beat:2}, Diff), Diff == 7,
+	timeDiff(time{bar:2, beat:2}, time{bar:4, beat:1}, Diff2), Diff2 == 11.
 
 test(durationToBeats1, [setup(ts34), cleanup(clear)]) :-
 	durationToBeats([], Beats1), Beats1 == 0,
