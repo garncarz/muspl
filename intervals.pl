@@ -36,22 +36,27 @@ dbToneToIntervalToC(bis, (11, 1)).
 
 toneToIntervalToC(Tone, (Base, Detail)) :-
 	dbToneToIntervalToC(Tone, (Base, Detail)).
-toneToIntervalToC((Tone, Octave), (Base, Detail)) :-
-	integer(Octave),
-	dbToneToIntervalToC(Tone, (Base1, Detail)), !,
-	Base is Octave * 12 + Base1.
-toneToIntervalToC((Tone, Octave), Int) :-
+toneToIntervalToC(Tone, (Base, Detail)) :-
+	is_dict(Tone, tone), Tone :< tone{pitch: Pitch},
+	dbToneToIntervalToC(Pitch, (Base, Detail)), !.
+toneToIntervalToC(Tone, (Base, Detail)) :-
+	is_dict(Tone, tone), integer(Tone.octave),
+	dbToneToIntervalToC(Tone.pitch, (Base1, Detail)), !,
+	Base is Tone.octave * 12 + Base1.
+toneToIntervalToC(Tone, Int) :-
 	integer(Int),
 	Int1 is Int mod 12,
-	(dbToneToIntervalToC(Tone, (Int1, 0));
-		Int2 is Int1 - 1, dbToneToIntervalToC(Tone, (Int2, 1));
-		Int2 is Int1 + 1, dbToneToIntervalToC(Tone, (Int2, -1))),
-	Octave is Int div 12.
-toneToIntervalToC((Tone, Octave), (Base, Detail)) :-
+	(dbToneToIntervalToC(Pitch, (Int1, 0));
+		Int2 is Int1 - 1, dbToneToIntervalToC(Pitch, (Int2, 1));
+		Int2 is Int1 + 1, dbToneToIntervalToC(Pitch, (Int2, -1))),
+	Octave is Int div 12,
+	Tone = tone{pitch:Pitch, octave:Octave}.
+toneToIntervalToC(Tone, (Base, Detail)) :-
 	integer(Base), integer(Detail),
 	Base1 is Base mod 12,
-	dbToneToIntervalToC(Tone, (Base1, Detail)),
-	Octave is Base div 12.
+	dbToneToIntervalToC(Pitch, (Base1, Detail)),
+	Octave is Base div 12,
+	Tone = tone{pitch:Pitch, octave:Octave}.
 
 negInterval(Int1, Int2) :-
 	integer(Int1),
