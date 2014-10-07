@@ -47,17 +47,20 @@ symbolChordBaseName((Root1, Quality), (Root2, Quality)) :-
 %% symbolChord(Symbol, Chord)
 %
 %  @tbd Complete as much as possible.
-symbolChord((Root, Quality), Tones) :-
+symbolChord(SymChord, Tones) :-
+	is_dict(SymChord),
+	SymChord :< chord{root:Root, quality:Quality},
 	dbSymbolIntervals(Quality, Intervals),
 	maplist(intervalDiff(Root), Tones, Intervals).
 symbolChord(SymChord, Chord) :-
 	symbolChordF(SymChord, Chord, 1).
 
-symbolChordF((Root, Quality), Chord, Fuzzy) :-
+symbolChordF(chord{root:Root, quality:Quality}, Chord, Fuzzy) :-
 	nonvar(Chord),
 	length(Chord, TonesCount),
 	
-	(nonvar(Root), !; member(Root, Chord)),
+	(nonvar(Root), !; member(Root, Chord);
+		member(PotRoot, Chord), Root = PotRoot.pitch),
 	
 	dbSymbolIntervals(Quality, Intervals),
 	length(Intervals, FullCount),

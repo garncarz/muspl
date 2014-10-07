@@ -34,8 +34,11 @@ dbToneToIntervalToC(bes, (11, -1)).
 dbToneToIntervalToC(bis, (11, 1)).
 
 
-toneToIntervalToC(Tone, (Base, Detail)) :-
-	dbToneToIntervalToC(Tone, (Base, Detail)).
+toneToIntervalToC(Pitch, (Base, Detail)) :-
+	nonvar(Pitch),
+	dbToneToIntervalToC(Pitch, (Base, Detail)).
+toneToIntervalToC(tone{pitch:Pitch}, (Base, Detail)) :-
+	dbToneToIntervalToC(Pitch, (Base, Detail)).
 toneToIntervalToC(Tone, (Base, Detail)) :-
 	is_dict(Tone, tone), Tone :< tone{pitch: Pitch},
 	dbToneToIntervalToC(Pitch, (Base, Detail)), !.
@@ -65,7 +68,6 @@ negInterval((Base1, Detail1), (Base2, Detail2)) :-
 	integer(Base1), integer(Detail1),
 	Base2 is -Base1, Detail2 is -Detail1.
 
-intervalDiff(Int, Int, 0) :- !.
 intervalDiff((Base1, Detail1), (Base2, Detail2), Diff) :-
 	integer(Base1), integer(Detail1), integer(Base2), integer(Detail2), !,
 	Diff is (Base2 + Detail2) - (Base1 + Detail1).
@@ -76,13 +78,16 @@ intervalDiff((Base1, Detail1), (Base2, Detail2), Diff) :-
 intervalDiff(Tone1, Tone2, Diff) :-
 	nonvar(Tone1), nonvar(Tone2), !,
 	toneToIntervalToC(Tone1, Int1),
-	toneToIntervalToC(Tone2, Int2),
+	toneToIntervalToC(Tone2, Int2), !,
 	intervalDiff(Int1, Int2, Diff).
 intervalDiff(Tone1, Tone2, Diff) :-
 	nonvar(Tone1), var(Tone2), integer(Diff),
 	toneToIntervalToC(Tone1, Int1),
 	intervalDiff(Int1, Int2, Diff),
-	toneToIntervalToC(Tone2, Int2),
+	toneToIntervalToC(Tone2A, Int2),
+	(is_dict(Tone1, tone), not(tone{octave:_} :< Tone1)
+		-> del_dict(octave, Tone2A, _, Tone2);
+		Tone2 = Tone2A),
 	(atom(Tone1); not(atom(Tone2))).
 intervalDiff(Tone1, Tone2, Diff) :-
 	var(Tone1), nonvar(Tone2), integer(Diff),
