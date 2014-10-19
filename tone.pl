@@ -1,9 +1,8 @@
-:- module(intervals, [
-	intervalDiff/3,
+:- module(tone, [
 	intervalModDiff/3
 	]).
 
-:- ['intervals.plt'].
+:- ['tone.plt'].
 
 dbToneToIntervalToC(c, (0, 0)).
 dbToneToIntervalToC(ces, (0, -1)).
@@ -61,13 +60,6 @@ toneToIntervalToC(Tone, (Base, Detail)) :-
 	Octave is Base div 12,
 	Tone = tone{pitch:Pitch, octave:Octave}.
 
-negInterval(Int1, Int2) :-
-	integer(Int1),
-	Int2 is -Int1.
-negInterval((Base1, Detail1), (Base2, Detail2)) :-
-	integer(Base1), integer(Detail1),
-	Base2 is -Base1, Detail2 is -Detail1.
-
 intervalDiff((Base1, Detail1), (Base2, Detail2), Diff) :-
 	integer(Base1), integer(Detail1), integer(Base2), integer(Detail2), !,
 	Diff is (Base2 + Detail2) - (Base1 + Detail1).
@@ -75,24 +67,17 @@ intervalDiff((Base1, Detail1), (Base2, Detail2), Diff) :-
 	integer(Base1), integer(Detail1), integer(Diff), !,
 	(Detail2 = 0; Detail2 = -1; Detail2 = 1),
 	Base2 is Base1 + Detail1 + Diff - Detail2.
-intervalDiff(Tone1, Tone2, Diff) :-
-	nonvar(Tone1), nonvar(Tone2), !,
+
+Tone1.diff(Tone2) := Diff :-
 	toneToIntervalToC(Tone1, Int1),
 	toneToIntervalToC(Tone2, Int2), !,
 	intervalDiff(Int1, Int2, Diff).
-intervalDiff(Tone1, Tone2, Diff) :-
-	nonvar(Tone1), var(Tone2), integer(Diff),
+Tone1.add(Diff) := Tone2 :-
 	toneToIntervalToC(Tone1, Int1),
 	intervalDiff(Int1, Int2, Diff),
 	toneToIntervalToC(Tone2A, Int2),
-	(is_dict(Tone1, tone), not(tone{octave:_} :< Tone1)
-		-> del_dict(octave, Tone2A, _, Tone2);
-		Tone2 = Tone2A),
-	(atom(Tone1); not(atom(Tone2))).
-intervalDiff(Tone1, Tone2, Diff) :-
-	var(Tone1), nonvar(Tone2), integer(Diff),
-	negInterval(Diff, Diff2),
-	intervalDiff(Tone2, Tone1, Diff2).
+	(not(tone{octave:_} :< Tone1) -> del_dict(octave, Tone2A, _, Tone2);
+		Tone2 = Tone2A).
 
 intervalModDiff(Tone1, Tone2, Diff) :-
 	number(Diff),
