@@ -9,46 +9,49 @@
 
 :- ['scales.plt'].
 
+dbScale((ces, major), [ces, des, es, fes, ges, as, bes]).
+dbScale((ges, major), [ges, as, bes, ces, des, es, f]).
+dbScale((des, major), [des, es, f, ges, as, bes, c]).
+dbScale((as, major), [as, bes, c, des, es, f, g]).
+dbScale((es, major), [es, f, g, as, bes, c, d]).
+dbScale((bes, major), [bes, c, d, es, f, g, a]).
+dbScale((f, major), [f, g, a, bes, c, d, e]).
+dbScale((c, major), [c, d, e, f, g, a, b]).
+dbScale((g, major), [g, a, b, c, d, e, fis]).
+dbScale((d, major), [d, e, fis, g, a, b, cis]).
+dbScale((a, major), [a, b, cis, d, e, fis, gis]).
+dbScale((e, major), [e, fis, gis, a, b, cis, dis]).
+dbScale((b, major), [b, cis, dis, e, fis, gis, ais]).
+dbScale((fis, major), [fis, gis, ais, b, cis, dis, eis]).
+dbScale((cis, major), [cis, dis, eis, fis, gis, ais, bis]).
+
+dbScale((as, minor), [as, bes, ces, des, es, fes, ges]).
+dbScale((es, minor), [es, f, ges, as, bes, ces, des]).
+dbScale((bes, minor), [bes, c, des, es, f, ges, as]).
+dbScale((f, minor), [f, g, as, bes, c, des, es]).
+dbScale((c, minor), [c, d, es, f, g, as, bes]).
+dbScale((g, minor), [g, a, bes, c, d, es, f]).
+dbScale((d, minor), [d, e, f, g, a, bes, c]).
+dbScale((a, minor), [a, b, c, d, e, f, g]).
+dbScale((e, minor), [e, fis, g, a, b, c, d]).
+dbScale((b, minor), [b, cis, d, e, fis, g, a]).
+dbScale((fis, minor), [fis, gis, a, b, cis, d, e]).
+dbScale((cis, minor), [cis, dis, e, fis, gis, a, b]).
+dbScale((gis, minor), [gis, ais, b, cis, dis, e, fis]).
+dbScale((dis, minor), [dis, eis, fis, gis, ais, b, cis]).
+dbScale((ais, minor), [ais, bis, cis, dis, eis, fis, gis]).
+
 %% scale(-Scale, -Tones)
 % Scale consists of Tones (mere names).
-scale((ces, major), [ces, des, es, fes, ges, as, bes]).
-scale((ges, major), [ges, as, bes, ces, des, es, f]).
-scale((des, major), [des, es, f, ges, as, bes, c]).
-scale((as, major), [as, bes, c, des, es, f, g]).
-scale((es, major), [es, f, g, as, bes, c, d]).
-scale((bes, major), [bes, c, d, es, f, g, a]).
-scale((f, major), [f, g, a, bes, c, d, e]).
-scale((c, major), [c, d, e, f, g, a, b]).
-scale((g, major), [g, a, b, c, d, e, fis]).
-scale((d, major), [d, e, fis, g, a, b, cis]).
-scale((a, major), [a, b, cis, d, e, fis, gis]).
-scale((e, major), [e, fis, gis, a, b, cis, dis]).
-scale((b, major), [b, cis, dis, e, fis, gis, ais]).
-scale((fis, major), [fis, gis, ais, b, cis, dis, eis]).
-scale((cis, major), [cis, dis, eis, fis, gis, ais, bis]).
-
-scale((as, minor), [as, bes, ces, des, es, fes, ges]).
-scale((es, minor), [es, f, ges, as, bes, ces, des]).
-scale((bes, minor), [bes, c, des, es, f, ges, as]).
-scale((f, minor), [f, g, as, bes, c, des, es]).
-scale((c, minor), [c, d, es, f, g, as, bes]).
-scale((g, minor), [g, a, bes, c, d, es, f]).
-scale((d, minor), [d, e, f, g, a, bes, c]).
-scale((a, minor), [a, b, c, d, e, f, g]).
-scale((e, minor), [e, fis, g, a, b, c, d]).
-scale((b, minor), [b, cis, d, e, fis, g, a]).
-scale((fis, minor), [fis, gis, a, b, cis, d, e]).
-scale((cis, minor), [cis, dis, e, fis, gis, a, b]).
-scale((gis, minor), [gis, ais, b, cis, dis, e, fis]).
-scale((dis, minor), [dis, eis, fis, gis, ais, b, cis]).
-scale((ais, minor), [ais, bis, cis, dis, eis, fis, gis]).
+scale(scale{root:Root, quality:Quality}, Tones) :-
+	dbScale((Root, Quality), Tones).
 
 %% toneFromScale(-Tone, -Scale)
 % Tone is from Scale.
 toneFromScale(Tone, Scale) :-
+	is_dict(Tone, tone),
 	scale(Scale, ScaleTones),
-	toneName(Tone, ToneName),
-	member(ToneName, ScaleTones).
+	member(Tone.pitch, ScaleTones).
 
 %% chordFromScale(+Chord, -Scale)
 % True if Chord is from Scale.
@@ -97,9 +100,8 @@ sortedSongScales(Scales) :-
 	findall((Scale, Fuzzy), scaleSongF(Scale, Fuzzy), L1),
 	predsort(fuzzyScaleCmp, L1, L2),
 	reverse(L2, Scales).
-fuzzyScaleCmp(Delta, ((Root1, Intervals1), Fuzzy1),
-	((Root2, Intervals2), Fuzzy2)) :- once((
+fuzzyScaleCmp(Delta, (Scale1, Fuzzy1), (Scale2, Fuzzy2)) :- once((
 	compare(Delta, Fuzzy1, Fuzzy2), Delta \= =;
-	compare(Delta, Root1, Root2), Delta \= =;
-	compare(Delta, Intervals1, Intervals2))).
+	compare(Delta, Scale1.root, Scale2.root), Delta \= =;
+	compare(Delta, Scale1.quality, Scale2.quality))).
 
