@@ -1,6 +1,4 @@
-:- module(tone, [
-	intervalModDiff/3
-	]).
+:- module(tone, []).
 
 :- ['tone.plt'].
 
@@ -72,6 +70,7 @@ Tone1.diff(Tone2) := Diff :-
 	toneToIntervalToC(Tone1, Int1),
 	toneToIntervalToC(Tone2, Int2), !,
 	intervalDiff(Int1, Int2, Diff).
+
 Tone1.add(Diff) := Tone2 :-
 	toneToIntervalToC(Tone1, Int1),
 	intervalDiff(Int1, Int2, Diff),
@@ -79,11 +78,9 @@ Tone1.add(Diff) := Tone2 :-
 	(not(tone{octave:_} :< Tone1) -> del_dict(octave, Tone2A, _, Tone2);
 		Tone2 = Tone2A).
 
-intervalModDiff(Tone1, Tone2, Diff) :-
+Tone1.modDiff(Tone2, Diff) := true :-
 	number(Diff),
-	intervalDiff(Tone1, Tone2, Diff1),
-	Diff mod 12 =:= Diff1 mod 12.
-intervalModDiff(Tone1, Tone2, Diff) :-
-	intervalDiff(Tone1, Tone2, Diff1),
-	Diff is Diff1 mod 12.
+	Diff mod 12 =:= Tone1.diff(Tone2) mod 12.
+Tone1.modDiff(Tone2) := Diff :-
+	Diff is Tone1.diff(Tone2) mod 12.
 
