@@ -1,18 +1,14 @@
-:- begin_tests(scales, [setup(clear), cleanup(clear)]).
+:- begin_tests(scale, [setup(clear), cleanup(clear)]).
 
 :- include('testSong.plt').
 
-test(toneFromScale, [nondet]) :-
-	toneFromScale(tone{pitch:g}, scale{root:c, quality:major}),
-	toneFromScale(tone{pitch:bes}, Scale), Scale == scale{root:d, quality:minor},
-	not(toneFromScale(tone{pitch:eis}, scake{root:c, quality:major})).
-
-test(chordFromScale, [nondet]) :-
-	chordFromScale([tone{pitch:e}, tone{pitch:g, octave:1},
-		tone{pitch:c, octave:(-1)}], Scale),
-		Scale == scale{root:d, quality:minor},
-	not(chordFromScale([tone{pitch:eig}, tone{pitch:g}],
-		scale{root:c, quality:major})).
+test(has) :-
+	scale{root:c, quality:major}.has(tone{pitch:g}),
+	scale{root:d, quality:minor}.has(tone{pitch:bes}),
+	not(scale{root:c, quality:major}.has(tone{pitch:es})),
+	scale{root:d, quality:minor}.has([tone{pitch:e}, tone{pitch:g, octave:1},
+		tone{pitch:c, octave:(-1)}]),
+	not(scale{root:c, quality:major}.has([tone{pitch:es}, tone{pitch:g}])).
 
 test(scaleAt) :-
 	scaleAt([d, e, f], 5, Tone1), Tone1 == e,
@@ -28,7 +24,7 @@ test(scaleToneF, [nondet]) :-
 test(scaleChordF, [nondet]) :-
 	scaleChordF(Scale1, [tone{pitch:c}, tone{pitch:d}, tone{pitch:e}], 1),
 		Scale1 == scale{root:c, quality:major},
-	scaleChordF(Scale2, [tone{pitch:c}, tone{pitch:d}, tone{pitch:eis},
+	scaleChordF(Scale2, [tone{pitch:c}, tone{pitch:d}, tone{pitch:es},
 		tone{pitch:f}], 0.75), Scale2 == scale{root:d, quality:minor},
 	not(scaleChordF(scale{root:c, quality:major},
 		[tone{pitch:d}, tone{pitch:bes}], 1)).
@@ -38,11 +34,11 @@ test(scaleSongF, [setup(testSong), cleanup(clear)]) :-
 	Fuzzy1 < 0.9, Fuzzy1 > 0.8,
 	once((scaleSongF(Scale2, Fuzzy2),
 		Scale2 == scale{root:gis, quality:minor})),
-	Fuzzy2 < 0.1.
+	Fuzzy2 < 0.3.
 
 test(sortedSongScales, [setup(testSong), cleanup(clear)]) :-
 	sortedSongScales(Scales),
 	nth1(1, Scales, (scale{root:f, quality:major}, _)).
 
-:- end_tests(scales).
+:- end_tests(scale).
 

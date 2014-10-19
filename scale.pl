@@ -1,13 +1,11 @@
-:- module(scales, [
-	scale/2,
-	scaleAt/3
-	]).
+:- module(scale, []).
 
 :- use_module(aux).
 :- use_module(basics).
 :- use_module(musicTime).
+:- use_module(tone).
 
-:- ['scales.plt'].
+:- ['scale.plt'].
 
 dbScale((ces, major), [ces, des, es, fes, ges, as, bes]).
 dbScale((ges, major), [ges, as, bes, ces, des, es, f]).
@@ -46,19 +44,16 @@ dbScale((ais, minor), [ais, bis, cis, dis, eis, fis, gis]).
 scale(scale{root:Root, quality:Quality}, Tones) :-
 	dbScale((Root, Quality), Tones).
 
-%% toneFromScale(-Tone, -Scale)
+%% has(-Tone, -Scale)
 % Tone is from Scale.
-toneFromScale(Tone, Scale) :-
+scale{root:Root, quality:Quality}.has(Tone) := true :-
 	is_dict(Tone, tone),
-	scale(Scale, ScaleTones),
-	member(Tone.pitch, ScaleTones).
-
-%% chordFromScale(+Chord, -Scale)
-% True if Chord is from Scale.
-chordFromScale(Chord, Scale) :-
-	length(Chord, Length), Length > 0,
-	scale(Scale, _),
-	forall(member(Tone, Chord), toneFromScale(Tone, Scale)).
+	dbScale((Root, Quality), Pitches),
+	member(Pitch, Pitches),
+	tone{pitch:Pitch}.modDiff(Tone) = 0, !.
+Scale.has(Tones) := true :-
+	is_list(Tones),
+	forall(member(Tone, Tones), Scale.has(Tone)).
 
 %% scaleAt(+ScaleTones, -Index, -Tone)
 % ScaleTones[Index mod length(ScaleTones)] = Tone
@@ -73,9 +68,9 @@ scaleAt(ScaleTones, Index, Tone) :-
 %% scaleToneF(-Scale, +Tone, -Fuzzy)
 % Tone is from Scale with fuzziness Fuzzy.
 scaleToneF(Scale, Tone, 1) :-
-	toneFromScale(Tone, Scale).
+	scale(Scale, _), Scale.has(Tone).
 scaleToneF(Scale, Tone, 0) :-
-	scale(Scale, _), not(toneFromScale(Tone, Scale)).
+	scale(Scale, _), not(Scale.has(Tone)).
 
 %% scaleChordF(-Scale, +Chord, -Fuzzy)
 % Chord is from Scale with fuzziness Fuzzy.
