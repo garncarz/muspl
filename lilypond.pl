@@ -7,6 +7,7 @@
 :- use_module(data).
 :- use_module(theory).
 :- use_module(musicTime).
+:- use_module(tone).
 
 :- dynamic chordsDb/1, chordsDbMaxCount/1.
 
@@ -62,14 +63,13 @@ staffLine(_, []).
 
 %% pitchLily(+Tone, -Lily)
 % True if Tone is represented by Lily string.
-%
-% @param Tone _|(Pitch, Octave)|_
-pitchLily((Pitch, Octave), Lily) :-
-	Octave > 0 -> Octave2 is Octave - 1, pitchLily((Pitch, Octave2), Lily2),
+pitchLily(Tone, Lily) :-
+	Tone :< tone{pitch:Pitch, octave:Octave},
+	(Octave > 0 -> pitchLily(Tone.lowerOctave(), Lily2),
 		concat(Lily2, '\'', Lily);
-	Octave < 0 -> Octave2 is Octave + 1, pitchLily((Pitch, Octave2), Lily2),
+	Octave < 0 -> pitchLily(Tone.higherOctave(), Lily2),
 		concat(Lily2, ',', Lily);
-	Lily = Pitch.
+	Lily = Pitch).
 
 unfoldDurs(Duration, Action, Result) :-
 	unfoldDurs(Duration, Action, Result, ' ~').

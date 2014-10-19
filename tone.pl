@@ -84,3 +84,8 @@ Tone1.modDiff(Tone2, Diff) := true :-
 Tone1.modDiff(Tone2) := Diff :-
 	Diff is Tone1.diff(Tone2) mod 12.
 
+Tone.lowerOctave() := Tone.put(octave, Octave2) :-
+	Octave2 is Tone.octave - 1.
+Tone.higherOctave() := Tone.put(octave, Octave2) :-
+	Octave2 is Tone.octave + 1.
+
