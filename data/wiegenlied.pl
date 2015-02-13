@@ -22,10 +22,10 @@ extra timeSignature(6, 8).
 ♪ copyBars{from:2, to:4, cond:isStaff(f)}.
 
 
-♪ melody{start:(5, 1, g), relative:(g, 1, 8), run:[0, ((-1, 1), 8), 0, 0,
-	((-1, 1), 8), 0, (2, [4, 8, 4])]}.
-♪ melody{start:(5, 1, g), relative:(e, 1, 8), run:[0, ((-1, 1), 8), 0, 0,
-	((-1, 1), 8), 0, (2, [4, 8, 4])]}.
+♪ melody{start:(5, 1, g), relative:(g, 1, 8), run:[0, -1:1, 0, 0,
+	-1:1, 0, (2, [4, 8, 4])]}.
+♪ melody{start:(5, 1, g), relative:(e, 1, 8), run:[0, -1:1, 0, 0,
+	-1:1, 0, (2, [4, 8, 4])]}.
 ♪ melody{start:(5, 1, f), relative:(c, 0, 4), run:[0, (7, 8), 0, (7, 8)]}.
 ♪ melody{start:(6, 1, f), relative:(c, 0, 8), run:[0, 2, 4, 7, 4, 0]}.
 
@@ -39,7 +39,7 @@ extra timeSignature(6, 8).
 
 
 ♪ melody{start:(9, 1, g), relative:(d, 2, 8), run:[0, 0, 0, 0,
-	((-1, 1), 8), 0, (2, [4, 8, 4])]}.
+	-1:1, 0, (2, [4, 8, 4])]}.
 ♪ melody{start:(9, 1, g), relative:(bes, 1, 8), run:[0, 0, 0, 0,
 	0, 0, (2, [4, 8, 4])]}.
 ♪ melody{start:(9, 1, g), relative:(f, 1, 8), run:[0, 0, 0, 0,
@@ -49,9 +49,9 @@ extra timeSignature(6, 8).
 ♪ copyBars{from:9, to:10, cond:isStaff(f)}.
 
 ♪ melody{start:(11, 1, g), relative:(c, 2, 8), run:[0, 0, 0, 0,
-	((-1, 1), 8), 0, (3, [4, 8, 4])]}.
+	-1:1, 0, (3, [4, 8, 4])]}.
 ♪ melody{start:(11, 1, g), relative:(a, 1, 8), run:[0, 0, 0, 0,
-	((-1, 1), 8), 0, (2, [4, 8, 4])]}.
+	-1:1, 0, (2, [4, 8, 4])]}.
 ♪ melody{start:(11, 1, g), relative:(f, 1, 8), run:[0, 0, 0, 0,
 	0, 0, (2, [4, 8, 4])]}.
 ♪ melody{start:(11, 1, f), relative:(f, -1, 8), run:[0, 7, 7, 0, 7, 7]}.

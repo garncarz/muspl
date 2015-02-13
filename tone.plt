@@ -14,7 +14,9 @@ test(diff) :-
 test(add) :-
 	once((tone{pitch:b, octave:(-1)} :< tone{pitch:a, octave:0}.add(-10))),
 	once((tone{pitch:dis, octave:0} :< tone{pitch:dis, octave:0}.add(0))),
-	once((tone{pitch:g}.add(3) == tone{pitch:ais})).
+	once((tone{pitch:g}.add(3) == tone{pitch:ais})),
+	once((tone{pitch:c}.add(7:1) == tone{pitch:gis})),
+	once((tone{pitch:c}.add(7:(-1)) == tone{pitch:ges})).
 
 :- end_tests(tone).
 

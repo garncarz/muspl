@@ -72,6 +72,12 @@ Tone1.diff(Tone2) := Diff :-
 	toneToIntervalToC(Tone2, Int2), !,
 	intervalDiff(Int1, Int2, Diff).
 
+Tone1.add(Diff:Adjust) := Tone3 :-
+	Tone2 = Tone1.add(Diff),
+	dbToneToIntervalToC(Tone2.pitch, (Int, 0)),
+	dbToneToIntervalToC(Pitch3, (Int, Adjust)),
+	Tone3 = Tone2.put(pitch, Pitch3).
+Tone1.add(Diff:Adjust) := Tone1.add(Diff).add(Adjust).
 Tone1.add(Diff) := Tone2 :-
 	toneToIntervalToC(Tone1, Int1),
 	intervalDiff(Int1, Int2, Diff),
