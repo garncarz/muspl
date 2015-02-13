@@ -45,7 +45,7 @@
 
 :- ['data.plt'].
 
-loadData(Name) :-
+loadData_(Name) :-
 	clearData,
 	directory_file_path(Dir1, File1, Name),
 	atomic_list_concat(['data/', Dir1], Dir2),
@@ -54,6 +54,10 @@ loadData(Name) :-
 	atomic_list_concat([File1, '.pl'], Filename),
 	consult(Filename),
 	working_directory(_, StartDir).
+loadData(Name) :-
+	loadData_(Name),
+	mvNotation(old),
+	newNotationFrom(old).
 
 loadLyrics(Staff, LyricsName) :-
 	open(LyricsName, read, Stream, []),
@@ -86,7 +90,7 @@ staffCmp(Delta, Staff1, Staff2) :-
 	nth0(Index2, Sorted, Staff2),
 	compare(Delta, Index1, Index2).
 allStaffs(Staffs) :-
-	findall(Staff, notation((_, _, Staff), _, _), AllStaffsTeam),
+	findall(Staff, (notation(T, _, _), time{staff:Staff} :< T), AllStaffsTeam),
 	predsort(staffCmp, AllStaffsTeam, Staffs).
 
 %% allBeats(-Beats).
@@ -122,7 +126,6 @@ sameSongs(Song1, Song2)	:-
 		writeTree(Surplus2),
 		fail).
 songsDiff(Song1, Song2, Surplus1, Surplus2) :-
-	retractall(notationDb(_, _, _, _)),
 	loadData(Song1),
 	mvNotation(1),
 	loadData(Song2),
@@ -133,10 +136,13 @@ songsDiff(Song1, Song2, Surplus1, Surplus2) :-
 	findall(notation(Time, Tone, Dur), notationDb(2, Time, Tone, Dur),
 		Surplus2).
 mvNotation(Db) :-
+	retractall(notationDb(Db, _, _, _)),
+	fail.
+mvNotation(Db) :-
 	notation(Time, Tone, Dur),
 	assertz(notationDb(Db, Time, Tone, Dur)),
 	fail.
-mvNotation(_).
+mvNotation(_) :- retractall(notation(_, _, _)).
 rmSameNotation :-
 	notationDb(1, Time, Tone, Dur),
 	notationDb(2, Time, Tone, Dur),
@@ -144,4 +150,11 @@ rmSameNotation :-
 	retractall(notationDb(2, Time, Tone, Dur)),
 	fail.
 rmSameNotation.
+
+newNotationFrom(Db) :-
+	retract(notationDb(Db, (Bar, Beat, Staff), (Pitch, Octave), Dur)),
+	assertz(notation(time{bar:Bar, beat:Beat, staff:Staff},
+		tone{pitch:Pitch, octave:Octave}, Dur)),
+	fail.
+newNotationFrom(_).
 

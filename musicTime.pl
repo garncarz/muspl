@@ -27,14 +27,13 @@ timeDiff(Time1, Time2, Diff) :-
 		+ Time2.beat - Time1.beat.
 
 timeAdd(Time1, Dur, Time2) :-
-	Time1 = (Measure1, Beat1, Staff),
 	timeSignature(BeatsPerMeasure, _),
 	durationToBeats(Dur, BeatsAdded),
-	BeatAdded is Beat1 - 1 + BeatsAdded,
-	Measure2 is Measure1 + floor(BeatAdded) div BeatsPerMeasure,
+	BeatAdded is Time1.beat - 1 + BeatsAdded,
+	Bar2 is Time1.bar + floor(BeatAdded) div BeatsPerMeasure,
 	Beat2 is floor(BeatAdded) mod BeatsPerMeasure + 1 +
 		float_fractional_part(BeatAdded),
-	Time2 = (Measure2, Beat2, Staff).
+	Time2 = time{bar:Bar2, beat:Beat2, staff:Time1.staff}.
 	
 
 %% durationToBeats(+Duration, -Beats)

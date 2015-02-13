@@ -47,8 +47,7 @@ createAllChordsDb :-
 	verbose(maxCount:Count).
 
 staffLine(StartTime, Line) :-
-	StartTime = (_, _, Staff),
-	nextChord(Staff, Chord),
+	nextChord(StartTime.staff, Chord),
 	Chord = (ChordTime, _, Dur),
 	retractChord(Chord),
 	conflictingChords(Chord, Conflicting),
@@ -110,14 +109,16 @@ conflictingChords(Chord, []) :-
 	not(findConflictingChordTo(Chord, _)).
 
 findConflictingChordTo(Chord, Conflicting) :-
-	Chord = ((_, _, Staff), _, _),
+	Chord = (Time, _, _),
+	time{staff:Staff} :< Time,
 	nextChord(Staff, Conflicting),
 	conflictChords(Chord, Conflicting),
 	retractChord(Conflicting).
 
 nextChord(Staff, Chord) :-
 	chordsDb(Chord),
-	Chord = ((_, _, Staff), _, _).
+	Chord = (Time, _, _),
+	time{staff:Staff} :< Time.
 
 retractChord(Chord) :-
 	chordsDb(Chord),
@@ -191,7 +192,7 @@ staffLily(Staff, String) :-
 		'=', Tempo, '\n'], Header);
 		Header = Header1),
 	
-	staffLine((1, 1, Staff), StaffLine),
+	staffLine(time{bar:1, beat:1, staff:Staff}, StaffLine),
 	maplist(itemLily, StaffLine, LilyItems),
 	atomic_list_concat(LilyItems, ' ', LilyLine),
 	
