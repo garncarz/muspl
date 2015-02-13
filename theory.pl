@@ -16,10 +16,10 @@ $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
 
 :- reexport([
 	'basics',
-	'harmony',
-	'intervals',
+	'chord',
+	% 'harmony',  % TODO shift to dicts
 	'musicTime',
-	'scales',
-	'symbolChords'
+	'scale',
+	'tone'
 	]).
 

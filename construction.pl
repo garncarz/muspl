@@ -10,7 +10,6 @@
 	]).
 
 :- use_module(data).
-:- use_module(intervals).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COPYING:
@@ -47,9 +46,6 @@ true(_).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TRANSFORMATIONS:
 
-pitchShift(Shift, ((Bar, Beat, Staff), Pitch1, Duration),
-	((Bar, Beat, Staff), Pitch2, Duration)) :-
-	once((intervalDiff(Pitch1, Pitch2, Shift);
-		Pitch2 = Pitch1
-		)).
+pitchShift(Shift, (Time, Tone1, Duration), (Time, Tone2, Duration)) :-
+	once((Tone2 = Tone1.add(Shift); Tone2 = Tone1)).
 
