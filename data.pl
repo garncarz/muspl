@@ -1,6 +1,9 @@
 :- module(data, [
+	op(500, fx, '♪'),
 	op(500, fx, extra),
 	op(500, fx, cond),
+
+	'♪'/1,
 
 	notation/3,
 	extra/1,
@@ -24,9 +27,10 @@
 	songsDiff/4
 	]).
 
-:- op(-1, fx, extra), op(-1, fx, cond).
+:- op(-1, fx, '♪'), op(-1, fx, extra), op(-1, fx, cond).
 
 :- dynamic
+	'♪'/1,
 	notation/3,
 	extra/1,
 	cond/2,
@@ -34,18 +38,19 @@
 	notationDb/4.
 
 :- discontiguous
+	'♪'/1,
 	notation/3,
 	extra/1,
 	cond/2.
 
-:- op(500, fx, extra), op(500, fx, cond).
+:- op(500, fx, '♪'), op(500, fx, extra), op(500, fx, cond).
 
 :- use_module(aux).
 :- use_module(construction).
 
 :- ['data.plt'].
 
-loadData_(Name) :-
+loadData(Name) :-
 	clearData,
 	directory_file_path(Dir1, File1, Name),
 	atomic_list_concat(['data/', Dir1], Dir2),
@@ -53,8 +58,9 @@ loadData_(Name) :-
 	working_directory(StartDir, DataDir),
 	atomic_list_concat([File1, '.pl'], Filename),
 	consult(Filename),
-	working_directory(_, StartDir).
-loadData(Name) :-
+	working_directory(_, StartDir),
+	process.
+loadOldData(Name) :-
 	loadData_(Name),
 	mvNotation(old),
 	newNotationFrom(old).

@@ -7,6 +7,8 @@
 
 :- ['scale.plt'].
 
+dbInt(major, [0, 2, 4, 5, 7, 9, 11]).
+
 dbScale((ces, major), [ces, des, es, fes, ges, as, bes]).
 dbScale((ges, major), [ges, as, bes, ces, des, es, f]).
 dbScale((des, major), [des, es, f, ges, as, bes, c]).
@@ -46,9 +48,9 @@ scale(scale{root:Root, quality:Quality}, Tones) :-
 
 %% has(-Tone, -Scale)
 % Tone is from Scale.
-scale{root:Root, quality:Quality}.has(Tone) := true :-
+Scale.has(Tone) := true :-
 	is_dict(Tone, tone),
-	dbScale((Root, Quality), Pitches),
+	dbScale((Scale.root, Scale.quality), Pitches),
 	member(Pitch, Pitches),
 	tone{pitch:Pitch}.modDiff(Tone) = 0, !.
 Scale.has(Tones) := true :-
@@ -64,6 +66,19 @@ scaleAt(ScaleTones, Index, Tone) :-
 	nth0(ScaleIndex, ScaleTones, Tone), !.
 scaleAt(ScaleTones, Index, Tone) :- 
 	nth1(Index, ScaleTones, Tone).
+
+Scale.intAt(Index) := Int :-
+	dbInt(Scale.quality, ListInts),
+	length(ListInts, Len),
+	IntIndex is Index mod Len,
+	nth0(IntIndex, ListInts, Int1),
+	Int is Int1 + Index div Len * 12.
+Scale.intAtFrom(Index, Pitch) := Int :-
+	Int is Scale.intAt(Scale.pitchAt(Pitch) + Index)
+		- Scale.intAt(Scale.pitchAt(Pitch)).
+Scale.pitchAt(Pitch) := Index :-
+	dbScale((Scale.root, Scale.quality), Pitches),
+	nth0(Index, Pitches, Pitch), !.
 
 %% scaleToneF(-Scale, +Tone, -Fuzzy)
 % Tone is from Scale with fuzziness Fuzzy.

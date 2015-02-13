@@ -14,6 +14,22 @@ test(scaleAt) :-
 	scaleAt([d, e, f], 5, Tone1), Tone1 == e,
 	scaleAt([d, e, f], Index2, Tone2), Index2 == 3, Tone2 == f.
 
+test(intAt) :-
+	scale{quality:major}.intAt(0) == 0,
+	scale{quality:major}.intAt(2) == 4,
+	scale{quality:major}.intAt(7) == 12,
+	scale{quality:major}.intAt(-1) == -1,
+	scale{quality:major}.intAt(-2) == -3,
+	scale{quality:major}.intAt(-7) == -12,
+	scale{quality:major}.intAt(-8) == -13.
+test(intAtFrom) :-
+	Scale = scale{root: c, quality:major},
+	Scale.intAtFrom(2, d) == 3,
+	Scale.intAtFrom(-2, d) == -3.
+test(pitchAt) :-
+	Scale = scale{root: c, quality:major},
+	Scale.pitchAt(f) == 3.
+
 test(scaleToneF, [nondet]) :-
 	scaleToneF(Scale1, tone{pitch:b, octave:2}, 1),
 		Scale1 == scale{root:c, quality:major},

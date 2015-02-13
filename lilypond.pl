@@ -179,7 +179,7 @@ itemLily(Item, CommentedItemLily) :-
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
 staffLily(Staff, String) :-
-	extra notationScale((Root, IntervalPattern)),
+	extra scale{root:Root, quality:IntervalPattern},
 	extra timeSignature(BeatsInBar, BeatUnit),
 	(extra clef(Staff, Clef);
 		Staff == 'f' -> Clef = 'bass';
@@ -282,7 +282,7 @@ writeHeader :-
 exportLy(Filename) :-
 	tell(Filename),
 	write('\\version "2.16.1"\n\n'),
-	
+
 	(writeHeader; true),
 
 	createAllChordsDb,

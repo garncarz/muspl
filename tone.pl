@@ -34,8 +34,9 @@ dbToneToIntervalToC(bis, (11, 1)).
 toneToIntervalToC(Pitch, (Base, Detail)) :-
 	nonvar(Pitch),
 	dbToneToIntervalToC(Pitch, (Base, Detail)).
-toneToIntervalToC(tone{pitch:Pitch}, (Base, Detail)) :-
-	dbToneToIntervalToC(Pitch, (Base, Detail)).
+% TODO remove
+%toneToIntervalToC(tone{pitch:Pitch}, (Base, Detail)) :-
+%	dbToneToIntervalToC(Pitch, (Base, Detail)).
 toneToIntervalToC(Tone, (Base, Detail)) :-
 	is_dict(Tone, tone), Tone :< tone{pitch: Pitch},
 	dbToneToIntervalToC(Pitch, (Base, Detail)), !.

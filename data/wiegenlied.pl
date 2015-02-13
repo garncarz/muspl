@@ -1,25 +1,27 @@
 extra title('Schlafe, mein Prinzchen, schlaf ein').
 extra composer('Bernhard Flies').
 
-extra notationScale((f, major)).
+extra scale{root:f, quality:major}.
 
 extra timeSignature(6, 8).
 % timeSignature(0, 6, 8). FIXME od jakého času platí
 
-notation((1, 1, g), (a, 1), 8).
-notation((1, 1, g), (f, 1), 4).
-notation((1, 2, g), (bes, 1), 8).
-notation((1, 3, g), (a, 1), 8).
-notation((1, 3, g), (f, 1), 8).
-notation((1, 4, g), (g, 1), 8).
-notation((1, 4, g), (e, 1), 8).
-notation((1, 5, g), (f, 1), 8).
-notation((1, 5, g), (d, 1), 8).
-notation((1, 6, g), (g, 1), 8).
-notation((1, 6, g), (e, 1), 8).
-notation((2, 1, g), (f, 1), 4).
-notation((2, 3, g), r, 8).
-notation((2, 4, g), r, 4).
+♪ melody{start:(1, 1, g), relative:(a, 1, 8), run:[0, 1, 0, -1, -2, -1, (-2, 4)]}.
+♪ melody{start:(1, 1, g), relative:(f, 1, 8), run:[(0, 4), 0, -1, -2, -1]}.
+♪ melody{start:(1, 1, f), relative:(c, 1, 8), run:[0, 1, 0, (-1, 4), -1]}.
+♪ melody{start:(1, 1, f), relative:(f, 0, 4), run:[0, (0, 8), -3, (-3, 8)]}.
+
+♪ melody{start:(2, 1, f), relative:(a, 0, 8), run:[0, 2, 2, 0, 2, 2]}.
+♪ melody{start:(2, 1, f), relative:(f, 0, 8), run:[0, r, r, 0, r, r]}.
+
+♪ melody{start:(2, 6, g), relative:(f, 1, 8), run:[0, 0, 3, 3, 3, 4, 5, (4, 4)]}.
+♪ melody{start:(2, 6, g), relative:(f, 1, 8), run:[r, -2, 0, 0, -2, 0, 0, (0, 4)]}.
+♪ melody{start:(3, 1, f), relative:(bes, 0, 8), run:[0, 2, 2, 0, 2, 2]}.
+♪ melody{start:(3, 1, f), relative:(f, 0, 8), run:[0, r, r, 0, r, r]}.
+
+♪ copyBars{from:2, to:4, cond:isStaff(f) /*, count:1*/}.
+
+
 notation((2, 6, g), (f, 1), 8).
 notation((3, 1, g), (f, 1), 8).
 notation((3, 1, g), (d, 1), 8).
