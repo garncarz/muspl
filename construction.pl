@@ -37,8 +37,11 @@ process(Action) :-
 	process(melody{start:(Time2.bar, Time2.beat, Time2.staff),
 		relative:(Pitch, Octave, Dur1), run:Rest}).
 process(Action) :-
-	copyBars{from:Bar1, to:Bar2, cond:Cond} :< Action,
-	copyBarsCond(Bar1, Bar2, 1, Cond).
+	copyBars{from:Bar1, to:Bar2} :< Action,
+	(copyBars{count:Count} :< Action; Count = 1),
+	(copyBars{cond:Cond} :< Action; Cond = true),
+	(copyBars{action:Subaction} :< Action; Subaction = =),
+	copyBars(Bar1, Bar2, Count, Cond, Subaction), !.
 process(_).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,8 +53,10 @@ copyBars(Start, Dest, Len, Cond, Action) :-
 	Bar1 is Bar - (Dest - Start),
 	notation(Time1, Pitch, Duration),
 	Time1.bar = Bar1,
+	copy_term(Time1, Time21),
+	b_set_dict(bar, Time21, Bar),
 	call(Cond, (Time1, Pitch, Duration)),
-	call(Action, (Time1, Pitch, Duration), (Time2, Pitch2, Duration2)),
+	call(Action, (Time21, Pitch, Duration), (Time2, Pitch2, Duration2)),
 	assertz(notation(Time2, Pitch2, Duration2)),
 	fail.
 copyBars(_, _, _, _, _).

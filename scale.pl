@@ -73,6 +73,8 @@ Scale.intAt(Index) := Int :-
 	IntIndex is Index mod Len,
 	nth0(IntIndex, ListInts, Int1),
 	Int is Int1 + Index div Len * 12.
+Scale.intAtFrom((Index, Adjust), Pitch) := Int :-
+	Int is Scale.intAtFrom(Index, Pitch) + Adjust.
 Scale.intAtFrom(Index, Pitch) := Int :-
 	Int is Scale.intAt(Scale.pitchAt(Pitch) + Index)
 		- Scale.intAt(Scale.pitchAt(Pitch)).
