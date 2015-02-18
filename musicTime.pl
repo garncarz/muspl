@@ -1,6 +1,7 @@
 :- module(musicTime, [
 	timeDiff/3,
 	timeAdd/3,
+	durMul/3,
 	durationToBeats/2,
 	beatsToDuration/2,
 	normalizedDuration/2,
@@ -14,6 +15,8 @@
 :- use_module(data).
 
 :- ['musicTime.plt'].
+
+% TODO compare times, like beat:2 == beat:2.0
 
 timeSignature(BeatsPerMeasure, NoteDuration) :-
 	once((extra timeSignature(BeatsPerMeasure, NoteDuration);
@@ -34,6 +37,11 @@ timeAdd(Time1, Dur, Time2) :-
 	Beat2 is floor(BeatAdded) mod BeatsPerMeasure + 1 +
 		float_fractional_part(BeatAdded),
 	Time2 = time{bar:Bar2, beat:Beat2, staff:Time1.staff}.
+
+durMul(Dur1, Mul, Dur2) :-
+	durationToBeats(Dur1, Beats1),
+	Beats2 is Beats1 * Mul,
+	beatsToDuration(Beats2, Dur2).
 	
 
 %% durationToBeats(+Duration, -Beats)

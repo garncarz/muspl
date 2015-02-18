@@ -12,6 +12,7 @@
 	]).
 
 :- use_module(data).
+:- use_module(musicTime).
 
 process :-
 	retractall(notation(_, _, _)),
@@ -23,26 +24,37 @@ process :-
 process.
 process(Action) :-
 	melody{start:(Bar, Beat, Staff), relative:(Pitch, Octave, Dur1),
-		run:[Actual | Rest]} :< Action,
-	(Actual = (ScaleDiff, Dur); Actual = ScaleDiff, Dur = Dur1),
+		pitch:[PitchDiff | RestPitchDiff]} :< Action,
+	(_{len:[Len | RestLen]} :< Action; Len = 1, RestLen = []),
+	(is_dict(Len, exact), exact{dur:Dur} :< Len; durMul(Dur1, Len, Dur)),
 	Time = time{bar: Bar, beat:Beat, staff:Staff},
-	(Actual \= r ->
+	(PitchDiff \= r ->
 		extra Scale, is_dict(Scale, scale),
-		PitchShift = Scale.intAtFrom(ScaleDiff, Pitch),
+		% TODO Tone = Scale.add(tone{pitch: Pitch, octave:Octave}, PitchDiff),
+		PitchShift = Scale.intAtFrom(PitchDiff, Pitch),
 		Tone = tone{pitch: Pitch, octave:Octave}.add(PitchShift),
 		assertz(notation(Time, Tone, Dur));
 		true
 	),
 	timeAdd(Time, Dur, Time2), !,
-	process(melody{start:(Time2.bar, Time2.beat, Time2.staff),
-		relative:(Pitch, Octave, Dur1), run:Rest}).
+	ActionRest = Action
+		.put(start, (Time2.bar, Time2.beat, Time2.staff))
+		.put(pitch, RestPitchDiff)
+		.put(len, RestLen),
+	process(ActionRest).
 process(Action) :-
 	copyBars{from:Bar1, to:Bar2} :< Action,
 	(copyBars{count:Count} :< Action; Count = 1),
 	(copyBars{cond:Cond} :< Action; Cond = true),
 	(copyBars{action:Subaction} :< Action; Subaction = =),
 	copyBars(Bar1, Bar2, Count, Cond, Subaction), !.
-process(_).
+process(Action) :-
+	del{cond:Cond} :< Action,
+	notation(Time, Tone, Dur),
+	call(Cond, (Time, Tone, Dur)),
+	retract(notation(Time, Tone, Dur)),
+	fail.
+process(_).  % TODO maybe error
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COPYING:
