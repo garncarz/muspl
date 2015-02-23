@@ -4,8 +4,7 @@
 :- use_module(data).
 
 pitchValue(Tone, Value) :-
-	intervalDiff((c, 1), Tone, Diff),
-	Value is 60 + Diff.
+	Value is 60 + tone{pitch:c, octave:1}.diff(Tone).
 
 usTime(Time, USTime) :-
 	USTime is round(Time * 2).
@@ -15,8 +14,8 @@ usDur(Dur, USDur) :-
 processElements([], [], _).
 processElements([], [eol], _).
 processElements(Notes, [eol | LyricsRest], LastEnd) :-
-	Notes = [((Bar, Beat), _, _) | _],
-	timeDiff((1, 1), (Bar, Beat), Start1),
+	Notes = [(Time, _, _) | _],
+	timeDiff(time{bar:1, beat:1}, Time, Start1),
 	usTime(Start1, Start),
 	
 	ChangeTime is round((LastEnd + Start) / 2),
@@ -25,10 +24,10 @@ processElements(Notes, [eol | LyricsRest], LastEnd) :-
 	
 	processElements(Notes, LyricsRest, ChangeTime).
 processElements(Notes, Lyrics, _) :-
-	Notes = [((Bar, Beat), Tone, Dur) | NotesRest],
+	Notes = [(Time, Tone, Dur) | NotesRest],
 	Lyrics = [syl(Syllable) | LyricsRest],
 	
-	timeDiff((1, 1), (Bar, Beat), Start1),
+	timeDiff(time{bar:1, beat:1}, Time, Start1),
 	usTime(Start1, Start),
 	
 	durationToBeats(Dur, DurInBeats1),
@@ -64,8 +63,8 @@ exportUS(Name) :-
 		'#BPM:', USTempo, '\n'
 		]),
 	
-	findall(((Bar, Beat), Tone, Dur),
-		(notation((Bar, Beat, v), Tone, Dur), Tone \= r),
+	findall((Time, Tone, Dur),
+		(notation(Time, Tone, Dur), Tone \= r, Time.staff = v),
 		Notes1),
 	predsort(timeCmp, Notes1, Notes),
 	

@@ -113,15 +113,17 @@ allBeats(Staff, Beats) :-
 
 %% timeCmp(-Delta, +Time1, +Time2)
 % True if Time1 compared to Time2 is Delta.
+timeCmp(Delta, Elem1, Elem2) :-
+	(Time1, _, _) = Elem1, (Time2, _, _) = Elem2,
+	timeCmp(Delta, Time1, Time2).
+timeCmp(Delta, Elem1, Elem2) :-
+	_{time:Time1} :< Elem1, _{time:Time2} :< Elem2,
+	timeCmp(Delta, Time1, Time2).
 timeCmp(Delta, Time1, Time2) :-
 	%(time{staff:Staff1} :< Time1, time{staff:Staff2} :< Time2 ->
 	%	Staff1 = Staff2; true),  % TODO is it necessary?
 	(compare(Delta, Time1.bar, Time2.bar), Delta \= =;
 		compare(Delta, Time1.beat, Time2.beat)), !.
-timeCmp(Delta, Elem1, Elem2) :-
-	_{time:Time1} :< Elem1, _{time:Time2} :< Elem2,
-	timeCmp(Delta, Time1, Time2).
-
 
 sameSongs(Song1, Song2)	:-
 	songsDiff(Song1, Song2, Surplus1, Surplus2),
