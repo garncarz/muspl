@@ -43,6 +43,11 @@ test(addDurations) :-
 	addDurations(1, 1, Dur3), Dur3 == [1, 1],
 	addDurations([8, 2], 8, Dur4), Dur4 == [2, 4].
 
+test(dursInvCmp) :-
+	dursInvCmp(Delta1, [4, 8], 2), Delta1 == '>',
+	dursInvCmp(Delta2, [4, 8], [8, 4]), Delta2 == '=',
+	dursInvCmp(Delta3, [2, 2, 2], 1), Delta3 == '<'.
+
 test(toneAtTime1, [setup(testSong), cleanup(clear),
 		set(Tone == [(d, 1), (bes, 1)])]) :-
 	toneAtTime(Tone, (1, 2)).

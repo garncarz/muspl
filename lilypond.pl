@@ -28,7 +28,7 @@ chord(Start, (Start, Result, Duration), Duration) :-
 % True if Chords (and nothing else) start at Start.
 chords(Start, Chords) :-
 	findall(Duration, notation(Start, _, Duration), Durs1),
-	sort(Durs1, Durs2),
+	predsort(dursInvCmp, Durs1, Durs2),
 	maplist(chord(Start), Chords, Durs2).
 
 createAllChordsDb(Staff) :-
