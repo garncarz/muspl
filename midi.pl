@@ -55,7 +55,7 @@ metaType(84, smpteOffset).
 metaType(88, timeSignature).
 metaType(89, keySignature).
 metaType(127, sequencerSpecific).
-metaType(Nr, _) :- throw('unknown MIDI meta type': Nr).
+metaType(Nr, unknownMeta(Nr)). % :- throw('unknown MIDI meta type': Nr).
 
 metaEvent(EventType, Event) :-
 	EventType == 255,
@@ -89,6 +89,8 @@ sysExEvent(EventType, Event) :-
 	seek(midi, Length, current, _).
 
 
+oneParCtrlTypes([0, 12, 13]).
+twoParCtrlTypes([8, 9, 10, 11, 14]).
 ctrlType(8, noteOff).
 ctrlType(9, noteOn).
 ctrlType(10, noteAftertouch).
@@ -96,14 +98,15 @@ ctrlType(11, controller).
 ctrlType(12, programChange).
 ctrlType(13, channelAfterTouch).
 ctrlType(14, pitchBend).
-ctrlType(Nr, _) :- throw('unknown MIDI control type': Nr).
+ctrlType(Nr, unknownCtrlType(Nr)). % :- throw('unknown MIDI control type': Nr).
 
 controlEvent(EventType, Event) :-
 	Type is (EventType >> 4) /\ 15,
 	Chan is EventType /\ 15,
 	ctrlType(Type, Name),
 	readByte(Par1),
-	(between(12, 13, Type) -> Event = (Name, Chan, Par1);
+	twoParCtrlTypes(TwoParTypes),
+	(not(member(Type, TwoParTypes)) -> Event = (Name, Chan, Par1);
 	readByte(Par2), Event = (Name, Chan, Par1, Par2)).
 
 
@@ -116,6 +119,7 @@ readEvent((Delta, Event)) :-
 
 readTrackEvents(Events) :-
 	readEvent(Event),
+	% writeln(Event), % keypress,
 	(endOfTrack(Event) -> Events = [Event];
 	readTrackEvents(Rest), Events = [Event | Rest]).
 endOfTrack((_, endOfTrack)).
@@ -141,11 +145,4 @@ trackToAbsBeats(TPB, StartBeats, Track, AbsTrack) :-
 	trackToAbsBeats(TPB, Beats, Rest, AbsRest),
 	AbsTrack = [(Beats, Event) | AbsRest].
 trackToAbsBeats(_, _, [], []).
-
-
-run :-
-	readMidi('wiegenlied.midi', Tracks, TPB),
-	% writeln((Tracks, TPB)),
-	maplist(trackToAbsBeats(TPB), Tracks, AbsTracks),
-	writeln(AbsTracks).
 

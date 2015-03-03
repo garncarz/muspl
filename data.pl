@@ -4,9 +4,12 @@
 	notationScale/1,
 	
 	loadData/1,
+	saveData/1,
 	clearData,
 	
 	sameStaff/2,
+	
+	retractRedundant,
 	
 	allBeats/2,
 	allBeats/1,
@@ -19,12 +22,20 @@
 	timeSignature/2,
 	notationScale/1.
 
+:- use_module(aux).
+
 :- ['data.plt'].
 
 loadData(Name) :-
 	clearData,
-	string_concat('data/', Name, Filename),
+	atomic_list_concat(['data/', Name, '.pl'], Filename),
 	consult(Filename).
+
+saveData(Name) :-
+	atomic_list_concat(['data/', Name, '.pl'], Filename),
+	tell(Filename),
+	listing(notation/3),
+	told.
 
 clearData :-
 	retractall(notation(_, _, _)),
@@ -32,6 +43,12 @@ clearData :-
 	retractall(notationScale(_)).
 
 sameStaff((_, _, Staff), (_, _, Staff)).
+
+retractRedundant :-
+	findall(notation(Time, Tone, Dur), notation(Time, Tone, Dur), Notation),
+	sort(Notation, NotationSorted),
+	retractall(notation(_, _, _)),
+	multiAssert(NotationSorted).
 
 %% allBeats(-Beats).
 %% allBeats(+Staff, -Beats).

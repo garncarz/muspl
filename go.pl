@@ -6,7 +6,7 @@
 
 wieg :- wiegL, wiegW.
 wiegL :- loadData('wiegenlied').
-wiegW :- export('wiegenlied.ly').
+wiegW :- exportLy('wiegenlied.ly').
 
 :- wiegL.
 
