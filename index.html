@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640">
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen">
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>MusPl by garncarz</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/garncarz/muspl">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>MusPl</h1>
+            <h2>Musical Prolog library</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/garncarz/muspl/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/garncarz/muspl/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <p>This is a beginning project aiming at logical construction/analysis of musical pieces. It's written in <a href="http://www.swi-prolog.org">SWI-Prolog</a>, version 7, which comes with a great enhancement – <em>dicts</em>.</p>
+
+<h1>
+<a id="simple-example" class="anchor" href="#simple-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simple example</h1>
+
+<p>Load and export Flies's Lullaby (included in the project) as a Lilypond file.</p>
+
+<pre><code>$ ./go.pl
+% Started Prolog Documentation server at port 4000
+% You may access the server at http://localhost:4000/
+...
+% All 45 tests passed
+...
+
+?- loadData('wiegenlied').
+true.
+
+?- exportLy('wiegenlied.ly').
+maxCount:144
+count:100
+count:0
+true.
+
+?- halt.
+</code></pre>
+
+<p>Now run Lilypond to convert it to MIDI and PDF.</p>
+
+<pre><code>$ lilypond wiegenlied.ly
+</code></pre>
+
+<h1>
+<a id="simple-sample" class="anchor" href="#simple-sample" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simple sample</h1>
+
+<p>This is how a melody can be described in Prolog:</p>
+
+<pre><code>♪ melody{start:(1, 1, g), relative:(a, 1, 8),
+    pitch:[0, 1, 0, -1, -2, -1, -2],
+    len:[1, 1, 1, 1, 1, 1, 2]}.
+</code></pre>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/garncarz">garncarz</a> can be found on <a href="https://github.com/garncarz/muspl">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
