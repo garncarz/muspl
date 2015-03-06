@@ -8,14 +8,11 @@ It's written in [SWI-Prolog](http://www.swi-prolog.org), version 7, which comes 
 Load and export Flies's Lullaby (included in the project) as a Lilypond file.
 
 ```
-$ ./go.pl
-% Started Prolog Documentation server at port 4000
-% You may access the server at http://localhost:4000/
-...
-% All 45 tests passed
-...
+$ swipl
+?- [muspl].
+true.
 
-?- loadData('wiegenlied').
+?- loadData('examples/wiegenlied').
 true.
 
 ?- exportLy('wiegenlied.ly').
