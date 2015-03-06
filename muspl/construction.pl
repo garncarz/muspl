@@ -30,9 +30,9 @@ process(Action) :-
 	ActionEval = Action.put(Key, Eval),
 	process(ActionEval), !.
 process(Action) :-
-	melody{start:(Bar, Beat, Staff), relative:(Pitch, Octave, Dur1),
-		pitch:[PitchDiff | RestPitchDiff]} :< Action,
-	(_{len:[Len | RestLen]} :< Action; Len = 1, RestLen = []),
+	melody{start:(Bar, Beat, Staff), relative:(Pitch, Octave, Dur1)} :< Action,
+	multiplied(Action, pitch, PitchDiff, RestPitchDiff),
+	(multiplied(Action, len, Len, RestLen); Len = 1, RestLen = []),
 	(is_dict(Len, exact), exact{dur:Dur} :< Len; durMul(Dur1, Len, Dur)),
 	Time = time{bar: Bar, beat:Beat, staff:Staff},
 	(PitchDiff \= r ->
@@ -62,6 +62,15 @@ process(Action) :-
 	retract(notation(Time, Tone, Dur)),
 	fail.
 process(_).  % TODO maybe error
+
+
+multiplied(Action, Key, Value, Rest) :-
+	get_dict(Key, Action, [Value*Times | Rest1]) ->
+		(Times > 1 ->
+			RestTimes is Times - 1,
+			Rest = [Value*RestTimes | Rest1];
+		Rest = Rest1);
+	get_dict(Key, Action, [Value | Rest]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COPYING:
