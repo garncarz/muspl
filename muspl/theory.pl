@@ -12,6 +12,8 @@ $ Func: _|harmonic function|_, e.g. =1= (tonic)
 $ Time : _|(measure, beat)|_ or _|(measure, beat, _)|_, e.g. =|(10, 2)|=
 $ Beats : _|beats|_, e.g. =3=
 $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
+
+@tbd FIXME update
 */
 
 :- reexport([

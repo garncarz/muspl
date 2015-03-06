@@ -52,13 +52,7 @@
 
 loadData(Name) :-
 	clearData,
-	directory_file_path(Dir1, File1, Name),
-	atomic_list_concat(['data/', Dir1], Dir2),
-	absolute_file_name(Dir2, DataDir),
-	working_directory(StartDir, DataDir),
-	atomic_list_concat([File1, '.pl'], Filename),
-	consult(Filename),
-	working_directory(_, StartDir),
+	consult(Name),
 	process.
 loadOldData(Name) :-
 	loadData_(Name),
