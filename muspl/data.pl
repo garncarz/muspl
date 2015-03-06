@@ -1,9 +1,11 @@
 :- module(data, [
 	op(500, fx, '♪'),
+	op(500, xfx, '♪='),
 	op(500, fx, extra),
 	op(500, fx, cond),
 
 	'♪'/1,
+	'♪='/2,
 
 	notation/3,
 	extra/1,
@@ -31,6 +33,7 @@
 
 :- dynamic
 	'♪'/1,
+	'♪='/2,
 	notation/3,
 	extra/1,
 	cond/2,
@@ -39,6 +42,7 @@
 
 :- discontiguous
 	'♪'/1,
+	'♪='/2,
 	notation/3,
 	extra/1,
 	cond/2.

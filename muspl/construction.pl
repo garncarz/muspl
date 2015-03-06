@@ -23,6 +23,13 @@ process :-
 	fail.
 process.
 process(Action) :-
+	melody{} :< Action,
+	member(Key, [pitch, len]),
+	get_dict(Key, Action, Value),
+	Value ♪= Eval,
+	ActionEval = Action.put(Key, Eval),
+	process(ActionEval), !.
+process(Action) :-
 	melody{start:(Bar, Beat, Staff), relative:(Pitch, Octave, Dur1),
 		pitch:[PitchDiff | RestPitchDiff]} :< Action,
 	(_{len:[Len | RestLen]} :< Action; Len = 1, RestLen = []),
