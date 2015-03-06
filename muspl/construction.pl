@@ -33,7 +33,11 @@ process(Action) :-
 	melody{start:(Bar, Beat, Staff), relative:(Pitch, Octave, Dur1)} :< Action,
 	multiplied(Action, pitch, PitchDiff, RestPitchDiff),
 	(multiplied(Action, len, Len, RestLen); Len = 1, RestLen = []),
-	(is_dict(Len, exact), exact{dur:Dur} :< Len; durMul(Dur1, Len, Dur)),
+	(
+		is_list(Len) -> Dur = Len;
+		is_dict(Len, exact), exact{dur:Dur} :< Len;
+		durMul(Dur1, Len, Dur)
+	),
 	Time = time{bar: Bar, beat:Beat, staff:Staff},
 	(PitchDiff \= r ->
 		extra Scale, is_dict(Scale, scale),
