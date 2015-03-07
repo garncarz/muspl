@@ -1,4 +1,4 @@
-:- module(aux, [
+:- module(helpers, [
 	avg_list/2,
 	inverse/2,
 	map_list/3,
@@ -9,7 +9,7 @@
 
 :- use_module(data).
 
-:- ['aux.plt'].
+:- ['helpers.plt'].
 
 %% avg_list(+List, -Avg)
 % Average value of List is Avg.

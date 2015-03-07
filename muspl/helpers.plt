@@ -1,4 +1,4 @@
-:- begin_tests(aux).
+:- begin_tests(helpers).
 
 :- dynamic multiAssertTestPred/1.
 
@@ -15,9 +15,9 @@ test(map_list) :-
 
 test(multiAssert, [cleanup(retractall(multiAssertTestPred(_)))]) :-
 	multiAssert([multiAssertTestPred(3), multiAssertTestPred(yes)]),
-	once(aux:multiAssertTestPred(3)),
-	once(aux:multiAssertTestPred(yes)),
-	not(aux:multiAssertTestPred(no)).
+	once(helpers:multiAssertTestPred(3)),
+	once(helpers:multiAssertTestPred(yes)),
+	not(helpers:multiAssertTestPred(no)).
 
-:- end_tests(aux).
+:- end_tests(helpers).
 

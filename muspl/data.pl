@@ -45,7 +45,7 @@
 
 :- op(500, fx, '♪'), op(500, fx, extra), op(500, fx, cond).
 
-:- use_module(aux).
+:- use_module(helpers).
 :- use_module(construction).
 
 :- ['data.plt'].
