@@ -1,7 +1,7 @@
 #TITLE:Schlafe, mein Prinzchen, schlaf ein
 #ARTIST:Bernhard Flies
 #MP3:wiegenlied.ogg
-#BPM:50
+#BPM:60
 : 0 1 69 Schla
 : 2 1 70 fe, 
 : 4 1 69 mein 
@@ -12,10 +12,10 @@
 - 18
 : 22 1 65 es 
 : 24 1 65 ruhn 
-: 26 1 70 SchÃ¤f
+: 26 1 70 Schäf
 : 28 1 70 chen 
 : 30 1 70 und 
-: 32 1 72 VÃ¶
+: 32 1 72 Vö
 : 34 1 74 ge
 : 36 2 72 lein.
 - 43
