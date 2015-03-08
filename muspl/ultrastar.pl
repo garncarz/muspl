@@ -54,7 +54,7 @@ exportUS(Filename, Audioname) :-
 	
 	extra title(Title),
 	(extra artist(Artist); extra composer(Artist)),
-	(extra tempo(Tempo); Tempo = 100),
+	(extra tempo(Tempo); Tempo = 120),
 	
 	USTempo is round(Tempo / 2),
 	
