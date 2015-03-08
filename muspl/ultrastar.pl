@@ -1,4 +1,4 @@
-:- module(ultrastar, [exportUS/1]).
+:- module(ultrastar, [exportUS/1, exportUS/2]).
 
 :- use_module(helpers).
 :- use_module(data).
@@ -13,6 +13,7 @@ usDur(Dur, USDur) :-
 
 processElements([], [], _).
 processElements([], [eol], _).
+processElements([], [eol, eol], _).
 processElements(Notes, [eol | LyricsRest], LastEnd) :-
 	Notes = [(Time, _, _) | _],
 	timeDiff(time{bar:1, beat:1}, Time, Start1),
@@ -45,14 +46,15 @@ processElements(Notes, Lyrics, LastEnd) :-
 
 
 exportUS(Name) :-
-	atomic_concat(Name, '.usd', Filename),
+	atomic_concat(Name, '.txt', Filename),
 	atomic_concat(Name, '.ogg', Audioname),
-
+	exportUS(Filename, Audioname).
+exportUS(Filename, Audioname) :-
 	tell(Filename),
 	
 	extra title(Title),
 	(extra artist(Artist); extra composer(Artist)),
-	extra tempo(Tempo),
+	(extra tempo(Tempo); Tempo = 100),
 	
 	USTempo is round(Tempo / 2),
 	

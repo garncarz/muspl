@@ -5,7 +5,8 @@ It's written in [SWI-Prolog](http://www.swi-prolog.org), version 7, which comes 
 
 ## Simple example
 
-Load and export Flies's Lullaby (included in the project) as a Lilypond file.
+Load and export Flies's Lullaby (included in the project) as a Lilypond file
+and a karaoke text file.
 
 ```
 $ swipl
@@ -21,6 +22,9 @@ count:100
 count:0
 true.
 
+?- exportUS('wiegenlied.txt', 'wiegenlied.ogg').
+true.
+
 ?- halt.
 ```
 
@@ -33,6 +37,19 @@ $ lilypond wiegenlied.ly
 ```
 
 ![PDF screen](http://garncarz.github.io/muspl/wiegenlied.png)
+
+You can use [TiMidity++](http://timidity.sourceforge.net)
+or some other MIDI renderer to convert the MIDI to OGG (or MP3, if you like).
+
+```
+$ timidity -Ov wiegenlied.midi -o wiegenlied.ogg
+```
+
+If you use [UltraStar Deluxe](http://sourceforge.net/projects/ultrastardx)
+as your karaoke program, just copy
+the [TXT](http://garncarz.github.io/muspl/wiegenlied.txt)
+and [OGG](http://garncarz.github.io/muspl/wiegenlied.ogg) files
+to the program's `songs` folder and sing it!
 
 ## Simple sample
 
