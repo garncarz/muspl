@@ -1,11 +1,10 @@
 :- module(data, [
-	op(500, fx, '♪'),
-	op(500, xfx, '♪='),
+	op(500, fx, m),
 	op(500, fx, extra),
 	op(500, fx, cond),
 
-	'♪'/1,
-	'♪='/2,
+	m/1,
+	mDb/2,
 
 	notation/3,
 	extra/1,
@@ -29,11 +28,11 @@
 	songsDiff/4
 	]).
 
-:- op(-1, fx, '♪'), op(-1, fx, extra), op(-1, fx, cond).
+:- op(-1, fx, m), op(-1, fx, extra), op(-1, fx, cond).
 
 :- dynamic
-	'♪'/1,
-	'♪='/2,
+	m/1,
+	mDb/2,
 	notation/3,
 	extra/1,
 	cond/2,
@@ -41,13 +40,13 @@
 	notationDb/4.
 
 :- discontiguous
-	'♪'/1,
-	'♪='/2,
+	m/1,
+	mDb/2,
 	notation/3,
 	extra/1,
 	cond/2.
 
-:- op(500, fx, '♪'), op(500, fx, extra), op(500, fx, cond).
+:- op(500, fx, m), op(500, fx, extra), op(500, fx, cond).
 
 :- use_module(helpers).
 :- use_module(construction).

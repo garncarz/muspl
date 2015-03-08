@@ -18,15 +18,21 @@ process :-
 	retractall(notation(_, _, _)),
 	fail.
 process :-
-	retract(♪ Action),
+	retract(m Action),
 	process(Action),
 	fail.
 process.
+process([]).
+process([FirstAction | Rest]) :-
+	process(FirstAction),
+	process(Rest), !.
+process(Value = Eval) :-
+	assertz(mDb(Value, Eval)).
 process(Action) :-
 	melody{} :< Action,
 	member(Key, [pitch, len]),
 	get_dict(Key, Action, Value),
-	Value ♪= Eval,
+	mDb(Value, Eval),
 	ActionEval = Action.put(Key, Eval),
 	process(ActionEval), !.
 process(Action) :-
