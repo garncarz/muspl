@@ -1,0 +1,69 @@
+#TITLE:Schlafe, mein Prinzchen, schlaf ein
+#ARTIST:Bernhard Flies
+#MP3:wiegenlied.ogg
+#BPM:50
+: 0 1 69 Schla
+: 2 1 70 fe, 
+: 4 1 69 mein 
+: 6 1 67 Prinz
+: 8 1 65 chen, 
+: 10 1 67 schlaf 
+: 12 2 65 ein,
+- 18
+: 22 1 65 es 
+: 24 1 65 ruhn 
+: 26 1 70 Schäf
+: 28 1 70 chen 
+: 30 1 70 und 
+: 32 1 72 Vö
+: 34 1 74 ge
+: 36 2 72 lein.
+- 43
+: 48 1 67 Gar
+: 50 1 66 ten 
+: 52 1 67 und 
+: 54 1 67 Wie
+: 56 1 66 sen 
+: 58 1 67 ver
+: 60 6 70 stummt,
+- 69
+: 72 1 69 auch 
+: 74 1 69 nicht 
+: 76 1 69 ein 
+: 78 1 70 Bien
+: 80 1 69 chen 
+: 82 1 70 mehr 
+: 84 6 72 summt.
+- 93
+: 96 1 74 Lu
+: 98 1 74 na 
+: 100 1 74 mit 
+: 102 1 74 sil
+: 104 1 73 ber
+: 106 1 74 nem 
+: 108 6 77 Schein
+- 117
+: 120 1 72 guk
+: 122 1 72 ket 
+: 124 1 72 zum 
+: 126 1 72 Fen
+: 128 1 71 ster 
+: 130 1 72 her
+: 132 6 77 ein.
+- 141
+: 144 1 70 Schla
+: 146 1 72 fe 
+: 148 1 70 beim 
+: 150 1 69 sil
+: 152 1 70 ber
+: 154 1 69 nem 
+: 156 6 67 Schein.
+- 165
+: 168 1 69 Schla
+: 170 1 70 fe, 
+: 172 1 69 mein 
+: 174 1 67 Prinz
+: 176 1 69 chen, 
+: 178 1 67 schlaf 
+: 180 6 65 ein!
+E
