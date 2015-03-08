@@ -30,26 +30,26 @@ true.
 ```
 
 Now run [Lilypond](http://www.lilypond.org) to convert it to
-[MIDI](http://garncarz.github.io/muspl/wiegenlied.midi)
-and [PDF](http://garncarz.github.io/muspl/wiegenlied.pdf).
+[MIDI](https://garncarz.github.io/muspl/wiegenlied.midi)
+and [PDF](https://garncarz.github.io/muspl/wiegenlied.pdf).
 
-```
+```bash
 $ lilypond wiegenlied.ly
 ```
 
-![PDF screen](http://garncarz.github.io/muspl/wiegenlied.png)
+[![PDF screen](https://garncarz.github.io/muspl/wiegenlied.png)](https://garncarz.github.io/muspl/wiegenlied.pdf)
 
 You can use [TiMidity++](http://timidity.sourceforge.net)
 or some other MIDI renderer to convert the MIDI to OGG (or MP3, if you like).
 
-```
+```bash
 $ timidity -Ov wiegenlied.midi -o wiegenlied.ogg
 ```
 
 If you use [UltraStar Deluxe](http://sourceforge.net/projects/ultrastardx)
 as your karaoke program, just copy
-the [TXT](http://garncarz.github.io/muspl/wiegenlied.txt)
-and [OGG](http://garncarz.github.io/muspl/wiegenlied.ogg) files
+the [TXT](https://garncarz.github.io/muspl/wiegenlied.txt)
+and [OGG](https://garncarz.github.io/muspl/wiegenlied.ogg) files
 to the program's `songs` folder and sing it!
 
 
@@ -79,7 +79,8 @@ Repeated pitch/length sequences can be reused by a name:
 m [
 	'6long' = [1*6, [4, 8, 4]],  % [4, 8, 4] = exact duration 1/4 + 1/8 + 1/4
 	melody{start:(5, 1, v), relative:(g, 1, 8),
-		pitch:[0, -1:1, 0, 0, -1:1, 0, 2], len:'6long'},  % :1 = sharp, :(-1) would be flat
+		pitch:[0, -1:1, 0, 0, -1:1, 0, 2], len:'6long'},
+			% :1 = one semitone up, :(-1) would be one semitone down
 	melody{start:(5, 1, g), relative:(e, 1, 8),
 		pitch:[0, -1:1, 0, 0, -1:1, 0, 2], len:'6long'}
 ].
