@@ -47,47 +47,83 @@
 
       <section id="main_content">
         <p>This is a beginning project aiming at logical construction/analysis of musical pieces.
-It's written in <a href="http://www.swi-prolog.org">SWI-Prolog</a>, version 7, which comes with a great enhancement – <em>dicts</em>.</p>
+It's written in <a href="http://www.swi-prolog.org">SWI-Prolog</a> (version 7, using dicts).
+So far the construction phase is being developed.</p>
 
 <h2>
 <a id="simple-example" class="anchor" href="#simple-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simple example</h2>
 
-<p>Load and export Flies's Lullaby (included in the project) as a Lilypond file.</p>
+<p>Load and export Flies's Lullaby (included in the project) as a Lilypond file
+and a karaoke text file.</p>
 
-<pre><code>$ swipl
-?- [muspl].
-true.
+<div class="highlight highlight-prolog"><pre>$ <span class="pl-c1">swipl</span>
+?- [<span class="pl-c1">muspl</span>].
+<span class="pl-c1">true</span>.
 
-?- loadData('examples/wiegenlied').
-true.
+?- <span class="pl-c1">loadData</span>(<span class="pl-s1"><span class="pl-pds">'</span>examples/wiegenlied<span class="pl-pds">'</span></span>).
+<span class="pl-c1">true</span>.
 
-?- exportLy('wiegenlied.ly').
-maxCount:144
-count:100
-count:0
-true.
+?- <span class="pl-c1">exportLy</span>(<span class="pl-s1"><span class="pl-pds">'</span>wiegenlied.ly<span class="pl-pds">'</span></span>).
+<span class="pl-c1">maxCount</span>:144
+<span class="pl-c1">count</span>:100
+<span class="pl-c1">count</span>:0
+<span class="pl-c1">true</span>.
 
-?- halt.
-</code></pre>
+?- <span class="pl-c1">exportUS</span>(<span class="pl-s1"><span class="pl-pds">'</span>wiegenlied.txt<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>wiegenlied.ogg<span class="pl-pds">'</span></span>).
+<span class="pl-c1">true</span>.
+
+?- <span class="pl-c1">halt</span>.</pre></div>
 
 <p>Now run <a href="http://www.lilypond.org">Lilypond</a> to convert it to
-<a href="http://garncarz.github.io/muspl/wiegenlied.midi">MIDI</a>
-and <a href="http://garncarz.github.io/muspl/wiegenlied.pdf">PDF</a>.</p>
+<a href="https://garncarz.github.io/muspl/wiegenlied.midi">MIDI</a>
+and <a href="https://garncarz.github.io/muspl/wiegenlied.pdf">PDF</a>.</p>
 
-<pre><code>$ lilypond wiegenlied.ly
-</code></pre>
+<div class="highlight highlight-bash"><pre>$ lilypond wiegenlied.ly</pre></div>
 
-<p><img src="http://garncarz.github.io/muspl/wiegenlied.png" alt="PDF screen"></p>
+<p><a href="https://garncarz.github.io/muspl/wiegenlied.pdf"><img src="https://garncarz.github.io/muspl/wiegenlied.png" alt="PDF screen"></a></p>
+
+<p>You can use <a href="http://timidity.sourceforge.net">TiMidity++</a>
+or some other MIDI renderer to convert the MIDI to OGG (or MP3, if you like).</p>
+
+<div class="highlight highlight-bash"><pre>$ timidity -Ov wiegenlied.midi -o wiegenlied.ogg</pre></div>
+
+<p>If you use <a href="http://sourceforge.net/projects/ultrastardx">UltraStar Deluxe</a>
+as your karaoke program, just copy
+the <a href="https://garncarz.github.io/muspl/wiegenlied.txt">TXT</a>
+and <a href="https://garncarz.github.io/muspl/wiegenlied.ogg">OGG</a> files
+to the program's <code>songs</code> folder and sing it!</p>
 
 <h2>
-<a id="simple-sample" class="anchor" href="#simple-sample" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simple sample</h2>
+<a id="construction" class="anchor" href="#construction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Construction</h2>
 
-<p>This is how a melody can be described in Prolog:</p>
+<p>Simple melody line:</p>
 
-<pre><code>♪ melody{start:(1, 1, g), relative:(a, 1, 8),
-    pitch:[0, 1, 0, -1, -2, -1, -2],
-    len:[1, 1, 1, 1, 1, 1, 2]}.
-</code></pre>
+<div class="highlight highlight-prolog"><pre><span class="pl-c1">extra</span> <span class="pl-c1">scale</span>{<span class="pl-c1">root</span>:<span class="pl-c1">f</span>, <span class="pl-c1">quality</span>:<span class="pl-c1">major</span>}.  <span class="pl-c">% scale of a song</span>
+
+<span class="pl-c1">m</span> <span class="pl-c1">melody</span>{<span class="pl-c1">start</span>:(1, 1, <span class="pl-c1">v</span>),  <span class="pl-c">% bar 1, beat 1, staff 'v' (e.g. voice)</span>
+    <span class="pl-c1">relative</span>:(<span class="pl-c1">a</span>, 1, 8),  <span class="pl-c">% tone a, octave 1, duration 1/8</span>
+    <span class="pl-c1">pitch</span>:[0, 1, 0, -1, -2, -1, -2],  <span class="pl-c">% relative pitches from the scale</span>
+    <span class="pl-c1">len</span>:[1, 1, 1, 1, 1, 1, 2]}.  <span class="pl-c">% multiples of the relative duration</span></pre></div>
+
+<p>The same line with lengths described briefly:</p>
+
+<div class="highlight highlight-prolog"><pre><span class="pl-c1">m</span> <span class="pl-c1">melody</span>{<span class="pl-c1">start</span>:(1, 1, <span class="pl-c1">v</span>), <span class="pl-c1">relative</span>:(<span class="pl-c1">a</span>, 1, 8),
+    <span class="pl-c1">pitch</span>:[0, 1, 0, -1, -2, -1, -2], <span class="pl-c1">len</span>:[1*6, 2]}.</pre></div>
+
+<p>Repeated pitch/length sequences can be reused by a name:</p>
+
+<div class="highlight highlight-prolog"><pre><span class="pl-c1">m</span> [
+    <span class="pl-s1"><span class="pl-pds">'</span>6long<span class="pl-pds">'</span></span> = [1*6, [4, 8, 4]],  <span class="pl-c">% [4, 8, 4] = exact duration 1/4 + 1/8 + 1/4</span>
+    <span class="pl-c1">melody</span>{<span class="pl-c1">start</span>:(5, 1, <span class="pl-c1">v</span>), <span class="pl-c1">relative</span>:(<span class="pl-c1">g</span>, 1, 8),
+        <span class="pl-c1">pitch</span>:[0, -1:1, 0, 0, -1:1, 0, 2], <span class="pl-c1">len</span>:<span class="pl-s1"><span class="pl-pds">'</span>6long<span class="pl-pds">'</span></span>},
+            <span class="pl-c">% :1 = one semitone up, :(-1) would be one semitone down</span>
+    <span class="pl-c1">melody</span>{<span class="pl-c1">start</span>:(5, 1, <span class="pl-c1">g</span>), <span class="pl-c1">relative</span>:(<span class="pl-c1">e</span>, 1, 8),
+        <span class="pl-c1">pitch</span>:[0, -1:1, 0, 0, -1:1, 0, 2], <span class="pl-c1">len</span>:<span class="pl-s1"><span class="pl-pds">'</span>6long<span class="pl-pds">'</span></span>}
+].</pre></div>
+
+<p>Bars can be copied, under a condition and transformed in a way:</p>
+
+<div class="highlight highlight-prolog"><pre><span class="pl-c1">m</span> <span class="pl-c1">copyBars</span>{<span class="pl-c1">from</span>:6, <span class="pl-c1">to</span>:10, <span class="pl-c1">count</span>:2, <span class="pl-c1">cond</span>:<span class="pl-c1">isStaff</span>(<span class="pl-c1">f</span>), <span class="pl-c1">action</span>:<span class="pl-c1">pitchShift</span>(5)}.</pre></div>
       </section>
 
       <footer>
