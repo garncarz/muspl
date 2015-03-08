@@ -3,7 +3,7 @@
 /** <module> Lilypond export
 */
 
-:- use_module(aux).
+:- use_module(helpers).
 :- use_module(data).
 :- use_module(theory).
 :- use_module(musicTime).
