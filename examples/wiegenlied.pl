@@ -1,10 +1,13 @@
 extra title('Schlafe, mein Prinzchen, schlaf ein').
 extra composer('Bernhard Flies').
+extra poet('Friedrich Wilhelm Gotter').
 
 extra scale{root:f, quality:major}.
 
 extra timeSignature(6, 8).
 % timeSignature(0, 6, 8). FIXME since when? till when?
+
+% :- loadLyrics(g, 'wiegenlied.txt').
 
 m [
 

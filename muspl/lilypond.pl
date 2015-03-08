@@ -269,11 +269,14 @@ symbolChordsLily(String) :-
 writeHeader :-
 	extra title(Title),
 	extra composer(Composer),
+	(extra poet(Poet), format(atom(PoetLine), '\tpoet = "~s"\n', [Poet]);
+		PoetLine = ''),
 	
 	maplist(write, [
 		'\\header {\n',
 		'\ttitle = "', Title, '"\n',
 		'\tcomposer = "', Composer, '"\n',
+		PoetLine,
 		'}\n\n'
 		]).
 

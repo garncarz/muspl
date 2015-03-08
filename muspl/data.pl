@@ -55,7 +55,10 @@
 
 loadData(Name) :-
 	clearData,
-	consult(Name),
+	directory_file_path(DataDir, DataFile, Name),
+	working_directory(StartDir, DataDir),
+	consult(DataFile),
+	working_directory(_, StartDir),
 	process.
 loadOldData(Name) :-
 	loadData_(Name),
