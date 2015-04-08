@@ -5,8 +5,8 @@
 
 :- use_module(helpers).
 :- use_module(data).
+:- use_module(duration).
 :- use_module(theory).
-:- use_module(musicTime).
 :- use_module(tone).
 
 :- dynamic chordsDb/1, chordsDbMaxCount/1.
@@ -55,7 +55,7 @@ staffLine(StartTime, Line) :-
 		Item1 = [[Chord | Conflicting]]),
 	(spaceFiller(StartTime, ChordTime, Filler) -> append([Filler], Item1, Item);
 		Item = Item1),
-	timeAdd(ChordTime, Dur, NextTime),
+	NextTime = ChordTime.add(Dur),
 	staffLine(NextTime, Rest),
 	append(Item, Rest, Line).
 staffLine(_, []).
@@ -110,7 +110,7 @@ conflictingChords(Chord, []) :-
 
 findConflictingChordTo(Chord, Conflicting) :-
 	Chord = (Time, _, _),
-	time{staff:Staff} :< Time,
+	position{staff:Staff} :< Time,
 	nextChord(Staff, Conflicting),
 	conflictChords(Chord, Conflicting),
 	retractChord(Conflicting).
@@ -118,7 +118,7 @@ findConflictingChordTo(Chord, Conflicting) :-
 nextChord(Staff, Chord) :-
 	chordsDb(Chord),
 	Chord = (Time, _, _),
-	time{staff:Staff} :< Time.
+	position{staff:Staff} :< Time.
 
 retractChord(Chord) :-
 	chordsDb(Chord),
@@ -131,13 +131,13 @@ conflictChords(Chord1, Chord2) :-
 	Chord1 = (Start1, _, Duration1),
 	Chord2 = (Start2, _, _),
 	sameStaff(Start1, Start2),
-	timeDiff(Start1, Start2, Diff),
+	Diff = Start1.diff(Start2),
 	Diff >= 0,
 	durationToBeats(Duration1, Beats1),
 	Diff < Beats1.
 
 spaceFiller(From, To, Filler) :-
-	timeDiff(From, To, Diff),
+	Diff = From.diff(To),
 	beatsToDuration(Diff, Dur),
 	Filler = (_, s, Dur).
 
@@ -192,7 +192,7 @@ staffLily(Staff, String) :-
 		'=', Tempo, '\n'], Header);
 		Header = Header1),
 	
-	staffLine(time{bar:1, beat:1, staff:Staff}, StaffLine),
+	staffLine(position{bar:1, beat:1, staff:Staff}, StaffLine),
 	maplist(itemLily, StaffLine, LilyItems),
 	atomic_list_concat(LilyItems, ' ', LilyLine),
 	

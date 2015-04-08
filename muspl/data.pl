@@ -18,6 +18,7 @@
 	
 	retractRedundant/0,
 	
+	timeSignature/2,
 	allStaffs/1,
 	allBeats/2,
 	allBeats/1,
@@ -25,7 +26,9 @@
 	timeCmp/3,
 	
 	sameSongs/2,
-	songsDiff/4
+	songsDiff/4,
+
+	allSongChords/1
 	]).
 
 :- op(-1, fx, m), op(-1, fx, extra), op(-1, fx, cond).
@@ -96,8 +99,13 @@ staffCmp(Delta, Staff1, Staff2) :-
 	nth0(Index2, Sorted, Staff2),
 	compare(Delta, Index1, Index2).
 allStaffs(Staffs) :-
-	findall(Staff, (notation(T, _, _), time{staff:Staff} :< T), AllStaffsTeam),
+	findall(Staff, (notation(T, _, _), position{staff:Staff} :< T),
+		AllStaffsTeam),
 	predsort(staffCmp, AllStaffsTeam, Staffs).
+
+timeSignature(BeatsPerMeasure, NoteDuration) :-
+	once((extra timeSignature(BeatsPerMeasure, NoteDuration);
+		BeatsPerMeasure = 4, NoteDuration = 4)).
 
 %% allBeats(-Beats).
 %% allBeats(+Staff, -Beats).
@@ -108,7 +116,8 @@ allBeats(Beats) :-
 	findall(Time, notation(Time, _, _), Starts),
 	predsort(timeCmp, Starts, Beats).
 allBeats(Staff, Beats) :-
-	findall(Time, (notation(Time, _, _), time{staff:Staff} :< Time), Starts),
+	findall(Time, (notation(Time, _, _), position{staff:Staff} :< Time),
+		Starts),
 	predsort(timeCmp, Starts, Beats).
 
 %% timeCmp(-Delta, +Time1, +Time2)
@@ -117,10 +126,10 @@ timeCmp(Delta, Elem1, Elem2) :-
 	(Time1, _, _) = Elem1, (Time2, _, _) = Elem2,
 	timeCmp(Delta, Time1, Time2).
 timeCmp(Delta, Elem1, Elem2) :-
-	_{time:Time1} :< Elem1, _{time:Time2} :< Elem2,
+	_{position:Time1} :< Elem1, _{position:Time2} :< Elem2,
 	timeCmp(Delta, Time1, Time2).
 timeCmp(Delta, Time1, Time2) :-
-	%(time{staff:Staff1} :< Time1, time{staff:Staff2} :< Time2 ->
+	%(position{staff:Staff1} :< Time1, position{staff:Staff2} :< Time2 ->
 	%	Staff1 = Staff2; true),  % TODO is it necessary?
 	(compare(Delta, Time1.bar, Time2.bar), Delta \= =;
 		compare(Delta, Time1.beat, Time2.beat)), !.
@@ -161,8 +170,31 @@ rmSameNotation.
 
 newNotationFrom(Db) :-
 	retract(notationDb(Db, (Bar, Beat, Staff), (Pitch, Octave), Dur)),
-	assertz(notation(time{bar:Bar, beat:Beat, staff:Staff},
+	assertz(notation(position{bar:Bar, beat:Beat, staff:Staff},
 		tone{pitch:Pitch, octave:Octave}, Dur)),
 	fail.
 newNotationFrom(_).
+
+
+% from old musicTime:
+
+%% toneAtTime(-Tone, +Time)
+% True if Tone sounds at Time.
+toneAtTime(Tone, Time) :-
+	notation(Time2, Tone, Duration),
+	Diff = Time2.diff(Time),
+	Diff >= 0,
+	durationToBeats(Duration, Beats),
+	Diff < Beats.
+
+%% chordAtTime(-Chord, +Time)
+% True if Chord (and no more tones) sound at Time.
+chordAtTime(Chord, Time) :-
+	findall(Tone, toneAtTime(Tone, Time), Chord).
+
+%% allSongChords(-Chords)
+% Returns all song's chords as they follow.
+allSongChords(Chords) :-
+	allBeats(Beats),
+	maplist(chordAtTime, Chords, Beats).
 

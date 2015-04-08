@@ -2,7 +2,6 @@
 
 :- use_module(helpers).
 :- use_module(basics).
-:- use_module(musicTime).
 :- use_module(tone).
 
 :- ['scale.plt'].

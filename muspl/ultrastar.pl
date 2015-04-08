@@ -16,7 +16,7 @@ processElements([], [eol], _).
 processElements([], [eol, eol], _).
 processElements(Notes, [eol | LyricsRest], LastEnd) :-
 	Notes = [(Time, _, _) | _],
-	timeDiff(time{bar:1, beat:1}, Time, Start1),
+	Start1 = Time.diff(position{bar:1, beat:1}),
 	usTime(Start1, Start),
 	
 	ChangeTime is round((LastEnd + Start) / 2),
@@ -28,7 +28,7 @@ processElements(Notes, Lyrics, _) :-
 	Notes = [(Time, Tone, Dur) | NotesRest],
 	Lyrics = [syl(Syllable) | LyricsRest],
 	
-	timeDiff(time{bar:1, beat:1}, Time, Start1),
+	Start1 = Time.diff(position{bar:1, beat:1}),
 	usTime(Start1, Start),
 	
 	durationToBeats(Dur, DurInBeats1),

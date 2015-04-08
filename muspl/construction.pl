@@ -12,7 +12,6 @@
 	]).
 
 :- use_module(data).
-:- use_module(musicTime).
 
 process :-
 	retractall(notation(_, _, _)),
@@ -42,9 +41,9 @@ process(Action) :-
 	(
 		is_list(Len) -> Dur = Len;
 		is_dict(Len, exact), exact{dur:Dur} :< Len;
-		durMul(Dur1, Len, Dur)
+		Dur = duration{len:Dur1}.mul(Len).len
 	),
-	Time = time{bar: Bar, beat:Beat, staff:Staff},
+	Time = position{bar: Bar, beat:Beat, staff:Staff},
 	(PitchDiff \= r ->
 		extra Scale, is_dict(Scale, scale),
 		% TODO Tone = Scale.add(tone{pitch: Pitch, octave:Octave}, PitchDiff),
@@ -53,7 +52,7 @@ process(Action) :-
 		assertz(notation(Time, Tone, Dur));
 		true
 	),
-	timeAdd(Time, Dur, Time2), !,
+	Time2 = Time.add(Dur), !,
 	ActionRest = Action
 		.put(start, (Time2.bar, Time2.beat, Time2.staff))
 		.put(pitch, RestPitchDiff)

@@ -8,10 +8,10 @@ ts34 :- assertz(extra timeSignature(3, 4)).
 ts68 :- assertz(extra timeSignature(6, 8)).
 
 easyNot((Bar, Beat, Staff), (Pitch, Octave), Dur) :-
-	assertz(notation(time{bar:Bar, beat:Beat, staff:Staff},
+	assertz(notation(position{bar:Bar, beat:Beat, staff:Staff},
 		tone{pitch:Pitch, octave:Octave}, Dur)).
 easyNot((Bar, Beat, Staff), Note, Dur) :-
-	assertz(notation(time{bar:Bar, beat:Beat, staff:Staff},
+	assertz(notation(position{bar:Bar, beat:Beat, staff:Staff},
 		Note, Dur)).
 
 testSong :-

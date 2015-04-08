@@ -2,7 +2,6 @@
 
 :- use_module(data).
 :- use_module(midi).
-:- use_module(musicTime).
 
 :- ['dataMidi.plt'].
 

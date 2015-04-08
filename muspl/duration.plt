@@ -1,13 +1,6 @@
-:- begin_tests(musicTime, [setup(clear), cleanup(clear)]).
+:- begin_tests(duration, [setup(clear), cleanup(clear)]).
 
 :- include('testSong.plt').
-
-test(timeDiff1, [setup(ts34), cleanup(clear)]) :-
-	timeDiff(time{bar:10, beat:2}, time{bar:9, beat:1}, Diff), Diff == -4,
-	timeDiff(time{bar:9, beat:1}, time{bar:9, beat:1}, Diff2), Diff2 == 0.
-test(timeDiff2, [setup(ts68), cleanup(clear)]) :-
-	timeDiff(time{bar:9, beat:1}, time{bar:10, beat:2}, Diff), Diff == 7,
-	timeDiff(time{bar:2, beat:2}, time{bar:4, beat:1}, Diff2), Diff2 == 11.
 
 test(durationToBeats1, [setup(ts34), cleanup(clear)]) :-
 	durationToBeats([], Beats1), Beats1 == 0,
@@ -44,25 +37,5 @@ test(dursInvCmp) :-
 	dursInvCmp(Delta2, [4, 8], [8, 4]), Delta2 == '=',
 	dursInvCmp(Delta3, [2, 2, 2], 1), Delta3 == '<'.
 
-test(toneAtTime1, [setup(testSong), cleanup(clear),
-		set(Tone == [tone{pitch:d, octave:1}, tone{pitch:bes, octave:1}])]) :-
-	toneAtTime(Tone, time{bar:1, beat:2}).
-test(toneAtTime2, [setup(testSong), cleanup(clear),
-		all(Tone == [r])]) :-
-	toneAtTime(Tone, time{bar:4, beat:3}).
-
-test(chordAtTime, [setup(testSong), cleanup(clear)]) :-
-	chordAtTime(Chord, time{bar:1, beat:3}),
-	sort(Chord, ChordSorted), ChordSorted == [
-		tone{pitch:a, octave:1}, tone{pitch:c, octave:1},
-		tone{pitch:f, octave:0}, tone{pitch:f, octave:1}].
-
-test(allSongChords, [setup(testSong), cleanup(clear)]) :-
-	allSongChords(Chords),
-	once((member(Chord1, Chords), Chord1 == [
-		tone{pitch:f, octave:1}, tone{pitch:d, octave:1},
-		tone{pitch:c, octave:0}, tone{pitch:bes, octave:0}])),
-	not(member([tone{pitch:c, octave:1}, tone{pitch:f, octave:3}], Chords)).
-
-:- end_tests(musicTime).
+:- end_tests(duration).
 
