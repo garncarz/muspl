@@ -9,22 +9,22 @@
 	notation/3,
 	extra/1,
 	cond/2,
-	
+
 	loadData/1,
 	saveData/1,
 	clearData/0,
-	
+
 	sameStaff/2,
-	
+
 	retractRedundant/0,
-	
+
 	timeSignature/2,
 	allStaffs/1,
 	allBeats/2,
 	allBeats/1,
-	
+
 	timeCmp/3,
-	
+
 	sameSongs/2,
 	songsDiff/4,
 
@@ -39,7 +39,7 @@
 	notation/3,
 	extra/1,
 	cond/2,
-	
+
 	notationDb/4.
 
 :- discontiguous
@@ -183,9 +183,9 @@ newNotationFrom(_).
 toneAtTime(Tone, Time) :-
 	notation(Time2, Tone, Duration),
 	Diff = Time2.diff(Time),
-	Diff >= 0,
-	durationToBeats(Duration, Beats),
-	Diff < Beats.
+	Diff.beats() >= 0,
+	% TODO Duration should already be duration{}
+	Diff.beats() < duration{len:Duration}.beats().
 
 %% chordAtTime(-Chord, +Time)
 % True if Chord (and no more tones) sound at Time.

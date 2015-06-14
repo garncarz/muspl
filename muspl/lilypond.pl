@@ -132,14 +132,12 @@ conflictChords(Chord1, Chord2) :-
 	Chord2 = (Start2, _, _),
 	sameStaff(Start1, Start2),
 	Diff = Start1.diff(Start2),
-	Diff >= 0,
-	durationToBeats(Duration1, Beats1),
-	Diff < Beats1.
+	Diff.beats() >= 0,
+	% TODO Duration1 should already be duration{}
+	Diff.beats() < duration{len:Duration1}.beats().
 
 spaceFiller(From, To, Filler) :-
-	Diff = From.diff(To),
-	beatsToDuration(Diff, Dur),
-	Filler = (_, s, Dur).
+	Filler = (_, s, From.diff(To).norm()).
 
 indentLily(First, Chord, Lily) :-
 	First = (From, _, _),
@@ -166,7 +164,7 @@ newBar(Item, Bar) :-
 % True if music element Item is represented by ItemLily string.
 %
 % @param Item chord or rest
-itemLily(Item, CommentedItemLily) :- 
+itemLily(Item, CommentedItemLily) :-
 	(newBar(Item, Bar) ->
 		atomic_list_concat(['\n% Bar ', Bar, ':\n'], Prefix);
 		Prefix = ''),
@@ -174,7 +172,7 @@ itemLily(Item, CommentedItemLily) :-
 		chordLily(Item, ItemLily);
 		restLily(Item, ItemLily)),
 	atomic_list_concat([Prefix, ItemLily], CommentedItemLily).
-	
+
 
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
@@ -187,23 +185,23 @@ staffLily(Staff, String) :-
 	atomic_list_concat(['{ \\clef ', Clef, ' \\key ',
 		Root, ' \\', IntervalPattern, ' \\time ', BeatsInBar, '/', BeatUnit,
 		'\n'], Header1),
-	
+
 	(extra tempo(Tempo) -> atomic_list_concat([Header1, '\n\\tempo ', BeatUnit,
 		'=', Tempo, '\n'], Header);
 		Header = Header1),
-	
+
 	staffLine(position{bar:1, beat:1, staff:Staff}, StaffLine),
 	maplist(itemLily, StaffLine, LilyItems),
 	atomic_list_concat(LilyItems, ' ', LilyLine),
-	
+
 	atomic_list_concat([Header, LilyLine, '\n}\n'], String1),
-	
+
 	(extra lyrics(Staff, Lyrics) ->
 		string_to_atom(Lyrics, LyricsAtom),
 		atomic_list_concat(['staff', Staff, ' = <<\n', String1,
 			'\\addlyrics {\n', LyricsAtom, '}\n>>\n\n'], String);
 	atomic_list_concat(['staff', Staff, ' = ', String1, '\n'], String)).
-	
+
 
 staffInstrument(Staff, Instrument) :- extra instrument(Staff, Instrument).
 staffInstrument(_, 'acoustic grand').
@@ -271,7 +269,7 @@ writeHeader :-
 	extra composer(Composer),
 	(extra poet(Poet), format(atom(PoetLine), '\tpoet = "~s"\n', [Poet]);
 		PoetLine = ''),
-	
+
 	maplist(write, [
 		'\\header {\n',
 		'\ttitle = "', Title, '"\n',
@@ -291,11 +289,11 @@ exportLy(Filename) :-
 	createAllChordsDb,
 	%symbolChordsLily(SymChords),
 	%write(SymChords),
-	
+
 	allStaffs(Staffs),
 	forall(member(Staff, Staffs),
 		(staffLily(Staff, StaffLily), write(StaffLily))),
-	
+
 	write('\\score { <<\n'),
 	%write('\\new ChordNames { \\set chordChanges = ##t \\symChords }\n'),
 	forall(member(Staff, Staffs),
@@ -308,7 +306,7 @@ exportLy(Filename) :-
 			' }\n'], String),
 		write(String))),
 	write('>>\n\\layout { }\n}\n\n'),
-	
+
 	write('\\score { <<\n'),
 	write('% \\new Staff { \\set Staff.midiInstrument = #"church organ" \c
 			\\symChords }\n'),
@@ -318,6 +316,6 @@ exportLy(Filename) :-
 			Instrument, '" \\staff', Staff, ' }\n'], String),
 		write(String))),
 	write('>>\n\\midi { }\n}\n\n'),
-	
+
 	told, !.
 

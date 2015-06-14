@@ -1,6 +1,4 @@
 :- module(duration, [
-	durationToBeats/2,
-	beatsToDuration/2,
 	dursInvCmp/3
 	]).
 
@@ -16,6 +14,9 @@ Dur1.mul(Mul) := Dur2 :-
 	Dur2 = Dur1.put(len, Len2).
 
 Dur.beats() := Beats :-
+	Dur.get(negative) ->
+		durationToBeats(Dur.len, Beats2),
+		Beats is -Beats2;
 	durationToBeats(Dur.len, Beats).
 
 Dur1.add(Dur2) := Dur3 :-
@@ -27,8 +28,9 @@ Dur1.add(Dur2) := Dur3 :-
 
 %% durationToBeats(+Duration, -Beats)
 % True if Duration(s) take Beats of beats.
+durationToBeats(0, 0) :- !.
 durationToBeats(Duration, Beats) :-
-	number(Duration),
+	number(Duration), Duration > 0,
 	timeSignature(_, NoteDuration),
 	Beats is NoteDuration / Duration.
 durationToBeats([], 0).
@@ -37,11 +39,25 @@ durationToBeats([Duration | Rest], Beats) :-
 	durationToBeats(Rest, BeatsR),
 	Beats is Beat1 + BeatsR.
 
+Dur0.fromBeats(Beats) := Dur :-
+	Beats < 0 ->
+		Beats2 is -Beats,
+		beatsToDuration(Beats2, DurLen),
+		Dur = Dur0.put(len, DurLen).put(negative, true);
+	beatsToDuration(Beats, DurLen),
+	Dur = Dur0.put(len, DurLen).
+
+beatsToDuration(0, 0) :- !.
 beatsToDuration(Beats, Duration) :-
 	number(Beats), Beats > 0,
 	timeSignature(_, NoteDuration),
 	FloatDuration is NoteDuration / Beats,
 	normalizedDuration(FloatDuration, Duration).
+
+Dur.norm() := Normalized :-
+	Dur.len = [_ | _] ->
+		Normalized = Dur.len;
+	normalizedDuration(Dur.len, Normalized).
 
 normalizedDuration(Duration, Normalized) :-
 	(Duration > 128; Duration < 10 * epsilon) -> Normalized = [];

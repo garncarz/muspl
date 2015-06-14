@@ -8,12 +8,13 @@
 
 Pos1.diff(Pos2) := Diff :-
 	timeSignature(BeatsPerMeasure, _),
-	Diff is (Pos2.bar - Pos1.bar) * BeatsPerMeasure
-		+ Pos2.beat - Pos1.beat.
+	DiffBeats is (Pos2.bar - Pos1.bar) * BeatsPerMeasure
+		+ Pos2.beat - Pos1.beat,
+	Diff = duration{}.fromBeats(DiffBeats).
 
 Pos1.add(Dur) := Pos2 :-
 	timeSignature(BeatsPerMeasure, _),
-	durationToBeats(Dur, BeatsAdded),
+	BeatsAdded = Dur.beats(),
 	BeatAdded is Pos1.beat - 1 + BeatsAdded,
 	Bar2 is Pos1.bar + floor(BeatAdded) div BeatsPerMeasure,
 	Beat2 is floor(BeatAdded) mod BeatsPerMeasure + 1 +
