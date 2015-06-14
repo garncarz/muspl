@@ -26,11 +26,11 @@ test(normalizedDuration) :-
 	normalizedDuration(999, Dur4), Dur4 == [],
 	normalizedDuration(0.5, Dur5), Dur5 == [1, 1].
 
-test(addDurations) :-
-	addDurations(8, [8], Dur1), Dur1 == [4],
-	addDurations(8, 4, Dur2), Dur2 == [4, 8],
-	addDurations(1, 1, Dur3), Dur3 == [1, 1],
-	addDurations([8, 2], 8, Dur4), Dur4 == [2, 4].
+test(add) :-
+	duration{len:8}.add(duration{len:[8]}).len == [4],
+	duration{len:8}.add(duration{len:4}).len == [4, 8],
+	duration{len:1}.add(duration{len:1}).len == [1, 1],
+	duration{len:[8, 2]}.add(duration{len:8}).len == [2, 4].
 
 test(dursInvCmp) :-
 	dursInvCmp(Delta1, [4, 8], 2), Delta1 == '>',

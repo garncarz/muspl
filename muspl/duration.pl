@@ -1,5 +1,4 @@
 :- module(duration, [
-	addDurations/3,
 	durationToBeats/2,
 	beatsToDuration/2,
 	dursInvCmp/3
@@ -19,11 +18,12 @@ Dur1.mul(Mul) := Dur2 :-
 Dur.beats() := Beats :-
 	durationToBeats(Dur.len, Beats).
 
-addDurations(Dur1, Dur2, Dur) :-
-	sumDurationsInv(Dur1, SumInvDur1),
-	sumDurationsInv(Dur2, SumInvDur2),
+Dur1.add(Dur2) := Dur3 :-
+	sumDurationsInv(Dur1.len, SumInvDur1),
+	sumDurationsInv(Dur2.len, SumInvDur2),
 	DurSum is 1 / (SumInvDur1 + SumInvDur2),
-	normalizedDuration(DurSum, Dur).
+	normalizedDuration(DurSum, DurLen),
+	Dur3 = Dur1.put(len, DurLen).
 
 %% durationToBeats(+Duration, -Beats)
 % True if Duration(s) take Beats of beats.
