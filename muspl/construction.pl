@@ -3,10 +3,10 @@
 
 	% copying:
 	copyBars/5, copyBars/3, copyBar/2, copyBarsCond/4,
-	
+
 	% conditions:
 	isStaff/2, true/1,
-	
+
 	% transformations:
 	pitchShift/3
 	]).
@@ -39,9 +39,10 @@ process(Action) :-
 	multiplied(Action, pitch, PitchDiff, RestPitchDiff),
 	(multiplied(Action, len, Len, RestLen); Len = 1, RestLen = []),
 	(
-		is_list(Len) -> Dur = Len;
-		is_dict(Len, exact), exact{dur:Dur} :< Len;
-		Dur = duration{len:Dur1}.mul(Len).len
+		is_list(Len) -> Dur = duration{len:Len};
+		is_dict(Len, exact), exact{dur:ExactDur} :< Len ->
+			Dur = duration{len:ExactDur};
+		Dur = duration{len:Dur1}.mul(Len)
 	),
 	Time = position{bar: Bar, beat:Beat, staff:Staff},
 	(PitchDiff \= r ->
@@ -49,7 +50,7 @@ process(Action) :-
 		% TODO Tone = Scale.add(tone{pitch: Pitch, octave:Octave}, PitchDiff),
 		PitchShift = Scale.intAtFrom(PitchDiff, Pitch),
 		Tone = tone{pitch: Pitch, octave:Octave}.add(PitchShift),
-		assertz(notation(Time, Tone, Dur));
+		assertz(notation(Time, Tone, Dur.len));
 		true
 	),
 	Time2 = Time.add(Dur), !,
