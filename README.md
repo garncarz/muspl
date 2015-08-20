@@ -1,5 +1,7 @@
 # MusPl, a musical Prolog library
 
+[![Join the chat at https://gitter.im/garncarz/muspl](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/garncarz/muspl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is a beginning project aiming at logical construction/analysis of musical pieces.
 It's written in [SWI-Prolog](http://www.swi-prolog.org) (version 7, using dicts).
 So far the construction phase is being developed.
