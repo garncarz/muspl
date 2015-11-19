@@ -1,5 +1,7 @@
 # MusPl, a musical Prolog library
 
+[![Build Status](https://travis-ci.org/garncarz/muspl.svg?branch=splitOfMusicTime)](https://travis-ci.org/garncarz/muspl)
+
 This is a beginning project aiming at logical construction/analysis of musical pieces.
 It's written in [SWI-Prolog](http://www.swi-prolog.org) (version 7, using dicts).
 So far the construction phase is being developed.
