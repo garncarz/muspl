@@ -35,7 +35,7 @@ test(conflictChords, [setup(ts34), cleanup(clear)]) :-
 
 test(spaceFiller, [setup(ts68), cleanup(clear)]) :-
 	spaceFiller(position{bar:2, beat:2}, position{bar:4, beat:1}, Filler),
-		Filler =@= (_, s, [1, 4, 8]).
+		Filler =@= (_, s, [1, 4, 8]),
+    not(spaceFiller(position{bar:3, beat:4}, position{bar:3, beat:4}, _)).
 
 :- end_tests(lilypond).
-
