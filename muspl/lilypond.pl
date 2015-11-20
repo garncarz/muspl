@@ -29,7 +29,7 @@ chord(Start, (Start, Result, Duration), Duration) :-
 % True if Chords (and nothing else) start at Start.
 chords(Start, Chords) :-
     findall(Duration, notation(Start, _, Duration), Durs1),
-    predsort(dursInvCmp, Durs1, Durs2),
+    predsort(durCmp, Durs1, Durs2),
     maplist(chord(Start), Chords, Durs2).
 
 createAllChordsDb(Staff) :-
@@ -55,7 +55,7 @@ staffLine(StartTime, Line) :-
         Item1 = [[Chord | Conflicting]]),
     (spaceFiller(StartTime, ChordTime, Filler) -> append([Filler], Item1, Item);
         Item = Item1),
-    NextTime = ChordTime.add(duration{len:Dur}),
+    NextTime = ChordTime.add(Dur),
     staffLine(NextTime, Rest),
     append(Item, Rest, Line).
 staffLine(_, []).
@@ -70,6 +70,12 @@ pitchLily(Tone, Lily) :-
         concat(Lily2, ',', Lily);
     Lily = Pitch).
 
+unfoldDurs(Duration, Action, Result) :-
+    is_dict(Duration, duration),
+    unfoldDurs(Duration.len, Action, Result), !.
+unfoldDurs(Duration, Action, Result, Glue) :-
+    is_dict(Duration, duration),
+    unfoldDurs(Duration.len, Action, Result, Glue), !.
 unfoldDurs(Duration, Action, Result) :-
     unfoldDurs(Duration, Action, Result, ' ~').
 unfoldDurs(Duration, Action, Result, Glue) :-
@@ -133,12 +139,11 @@ conflictChords(Chord1, Chord2) :-
     sameStaff(Start1, Start2),
     Diff = Start1.diff(Start2),
     Diff.beats() >= 0,
-    % TODO Duration1 should already be duration{}
-    Diff.beats() < duration{len:Duration1}.beats().
+    Diff.beats() < Duration1.beats().
 
 spaceFiller(From, To, Filler) :-
-    Dur = From.diff(To).norm(),
-    Dur \= [],
+    Dur = From.diff(To),
+    Dur.norm() \= [],
     Filler = (_, s, Dur).
 
 indentLily(First, Chord, Lily) :-

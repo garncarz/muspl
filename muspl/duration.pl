@@ -1,5 +1,5 @@
 :- module(duration, [
-    dursInvCmp/3
+    durCmp/3
     ]).
 
 :- use_module(helpers).
@@ -79,3 +79,5 @@ dursInvCmp(Delta, Durs1, Durs2) :-
 
 Dur1.cmp(Dur2) := Delta :-
     dursInvCmp(Delta, Dur1.len, Dur2.len).
+
+durCmp(Delta, Dur1, Dur2) :- Delta = Dur1.cmp(Dur2).
