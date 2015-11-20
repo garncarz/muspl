@@ -22,3 +22,9 @@ Pos1.add(Dur) := Pos2 :-
     Pos2 = Pos1.put(bar, Bar2).put(beat, Beat2).
 
 Pos.elapsed() := position{bar:1, beat:1}.diff(Pos).
+
+Pos1.cmp(Pos2) := Delta :-
+	%(position{staff:Staff1} :< Pos1, position{staff:Staff2} :< Pos2 ->
+	%	Staff1 = Staff2; true),  % TODO is it necessary?
+	(compare(Delta, Pos1.bar, Pos2.bar), Delta \= =;
+		compare(Delta, Pos1.beat, Pos2.beat)), !.
