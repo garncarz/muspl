@@ -182,8 +182,7 @@ toneAtTime(Tone, Time) :-
     notation(Time2, Tone, Duration),
     Diff = Time2.diff(Time),
     Diff.beats() >= 0,
-    % TODO Duration should already be duration{}
-    Diff.beats() < duration{len:Duration}.beats().
+    Diff.beats() < Duration.beats().
 
 %% chordAtTime(-Chord, +Time)
 % True if Chord (and no more tones) sound at Time.
