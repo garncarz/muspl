@@ -20,7 +20,8 @@ $ Duration : e.g. =1= (a whole note), =4= (a quarter note)
 	'basics',
 	'chord',
 	% 'harmony',  % TODO shift to dicts
-	'musicTime',
+	'duration',
+	'position',
 	'scale',
 	'tone'
 	]).

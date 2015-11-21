@@ -18,5 +18,9 @@ test(add) :-
 	once((tone{pitch:c}.add(7:1) == tone{pitch:gis})),
 	once((tone{pitch:c}.add(7:(-1)) == tone{pitch:ges})).
 
-:- end_tests(tone).
+test(pitchFreq) :-
+    tone{pitch:a, octave:0}.pitchFreq() == 440,
+    Freq2 = tone{pitch:c, octave:1}.pitchFreq(), abs(Freq2 - 523.25) < 0.1,
+    Freq3 = tone{pitch:as, octave:(-2)}.pitchFreq(), abs(Freq3 - 103.83) < 0.1.
 
+:- end_tests(tone).
