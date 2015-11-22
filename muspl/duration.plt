@@ -39,8 +39,11 @@ test(add) :-
     duration{len:[8, 2]}.add(duration{len:8}).len == [2, 4].
 
 test(cmp) :-
-    duration{len:[4, 8]}.cmp(duration{len:2}) == '>',
+    duration{len:[4, 8]}.cmp(duration{len:2}) == '<',
     duration{len:[4, 8]}.cmp(duration{len:[8, 4]}) == '=',
-    duration{len:[2, 2, 2]}.cmp(duration{len:1}) == '<'.
+    duration{len:[2, 2, 2]}.cmp(duration{len:1}) == '>',
+    duration{len:4}.cmp(duration{len:0}) == '>',
+    duration{len:[]}.cmp(duration{len:1}) == '<',
+    duration{len:[]}.cmp(duration{len:0}) == '='.
 
 :- end_tests(duration).

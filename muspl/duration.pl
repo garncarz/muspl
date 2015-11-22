@@ -75,7 +75,7 @@ sumDurationsInv(Durs, Sum) :-
 dursInvCmp(Delta, Durs1, Durs2) :-
     sumDurationsInv(Durs1, Sum1),
     sumDurationsInv(Durs2, Sum2),
-    compare(Delta, Sum2, Sum1).
+    compare(Delta, Sum1, Sum2).
 
 Dur1.cmp(Dur2) := Delta :-
     dursInvCmp(Delta, Dur1.len, Dur2.len).

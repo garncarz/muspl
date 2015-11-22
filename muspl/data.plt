@@ -24,7 +24,7 @@ test(toneAtTime1, [setup(testSong), cleanup(clear),
         set(Tone == [tone{pitch:d, octave:1}, tone{pitch:bes, octave:1}])]) :-
     toneAtTime(Tone, position{bar:1, beat:2}).
 test(toneAtTime2, [setup(testSong), cleanup(clear), all(Tone == [r])]) :-
-    toneAtTime(Tone, position{bar:4, beat:3}).
+    toneAtTime(Tone, position{bar:2, beat:1}).
 
 test(chordAtTime, [setup(testSong), cleanup(clear)]) :-
     chordAtTime(Chord, position{bar:1, beat:3}),

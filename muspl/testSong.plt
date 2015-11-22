@@ -39,4 +39,4 @@ testSong :-
     easyNot((1, 6, f), (c, 0), 8),
     easyNot((1, 6, f), (bes, 0), 8),
 
-    easyNot((4, 3, g), r, 8).
+    easyNot((2, 1, g), r, 8), !.

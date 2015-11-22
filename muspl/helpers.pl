@@ -20,6 +20,7 @@ avg_list(List, Avg) :-
 
 %% inverse(+Number, -Inversed)
 % Inversed = 1 / Number
+inverse(0, 0) :- !.
 inverse(X, I) :-
 	I is 1 / X.
 
