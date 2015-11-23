@@ -1,9 +1,5 @@
 :- module(renderer, [renderSong/1]).
 
-% very slow
-% not using retract/assert for song samples now,
-% but toneSampleAt/3 & samplesAt/2 are clumsy
-
 :- use_module(helpers).
 :- use_module(data).
 :- use_module(audioExport).
@@ -11,6 +7,8 @@
 :- dynamic
     toneSamples/1,
     songLength/1.
+
+:- ['renderer.plt'].
 
 secondsPerBeat(0.6).
 durationToSeconds(Dur, Seconds) :-
@@ -20,6 +18,14 @@ durationToFrames(Dur, Frames) :-
     durationToSeconds(Dur, Seconds),
     sampleRate(SampleRate),
     Frames is round(SampleRate * Seconds).
+
+renderToneFrame((Tone, Dur), Frame, Sample) :-
+    is_dict(Tone, tone),
+    Freq = Tone.pitchFreq(),
+    durationToSeconds(Dur, Seconds),
+    sampleRate(SampleRate),
+    Sample is sin(2 * pi * Frame / SampleRate * Freq)
+              * exp(log(0.05) * Frame / SampleRate / Seconds) / 16.
 
 renderTone(Tone, Dur, Samples) :-
     toneSamples((Tone, Dur) - Samples), !.
@@ -39,20 +45,21 @@ renderTone(Tone, Dur, Samples) :-
         Samples),
     assertz(toneSamples((Tone, Dur) - Samples)), !.
 
-toneSampleAt((Pos, Tone, Dur), Frame, Sample) :-
-    toneSamples((Tone, Dur) - Samples),
-    durationToFrames(Pos.elapsed(), StartFrame),
-    SampleFrame is Frame - StartFrame,
-    nth0(SampleFrame, Samples, Sample).
-
-samplesAt(Frame, Samples) :-
-    findall(
-        Sample,
-        (
-            notation(Pos, Tone, Dur),
-            toneSampleAt((Pos, Tone, Dur), Frame, Sample)
-        ),
-        Samples).
+addSamples(Samples, 0, [], Samples) :- !.
+addSamples([Sample0 | SamplesRest0], 0, [Sample1 | SamplesRest1],
+           [Sample2 | SamplesRest2]) :- !,
+    Sample2 is Sample0 + Sample1,
+    addSamples(SamplesRest0, 0, SamplesRest1, SamplesRest2).
+addSamples([Sample0 | SamplesRest0], StartFrame, Samples1,
+           [Sample0 | SamplesRest2]) :- !,
+    StartFrame2 is StartFrame - 1,
+    addSamples(SamplesRest0, StartFrame2, Samples1, SamplesRest2).
+sumSamples(Samples, [], Samples) :- !.
+sumSamples(Samples0, [(StartFrame, Samples1) | RestSamples], Samples) :- !,
+    addSamples(Samples0, StartFrame, Samples1, Samples2),
+    length(RestSamples, Missing),
+    format('samples2go: ~d~n', [Missing]),
+    sumSamples(Samples2, RestSamples, Samples).
 
 renderSongSamples(_) :-
     retractall(toneSamples(_)),
@@ -77,20 +84,14 @@ renderSongSamples(Samples) :-
     songLength(Len),
     format('total length: ~w~n', [Len]),
     durationToFrames(Len, Frames),
-    sampleRate(SampleRate),
-    findall(
-        Sample,
-        (
-            between(0, Frames, Frame),
-            samplesAt(Frame, FrameSamples),
-            sum_list(FrameSamples, Sample),
-            (Frame mod SampleRate =:= 0 ->
-                Time is Frame/SampleRate,
-                Portion is Frame/Frames * 100,
-                format('done: ~d s (~1f %)~n', [Time, Portion]);
-                true)
+    findall(0, between(0, Frames, _), ZeroSamples),
+    findall((StartFrame, Samples),
+        (notation(Pos, Tone, Dur),
+         durationToFrames(Pos.elapsed(), StartFrame),
+         renderTone(Tone, Dur, Samples)
         ),
-        Samples).
+        TonesSamples),
+    sumSamples(ZeroSamples, TonesSamples, Samples).
 renderSong(Filename) :-
     renderSongSamples(Samples),
     exportWav(Filename, Samples).

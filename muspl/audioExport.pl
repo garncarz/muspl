@@ -1,8 +1,8 @@
 :- module(audioExport, [exportWav/2, sampleRate/1]).
 
 numChannels(1).
-sampleRate(44100).
-% sampleRate(8000).
+% sampleRate(44100).
+sampleRate(8000).
 bitsPerSample(24).
 
 bytesCount(BytesCount) :-
