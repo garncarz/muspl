@@ -20,6 +20,12 @@ test(timeCmp2) :-
     timeCmp(>, position{bar:3, beat:2, staff:g},
                position{bar:2, beat:5, staff:g}).
 
+test(songsDiff, [setup(clear), cleanup(clear)]) :-
+    songsDiff('examples/wiegenlied.pl', 'examples/wiegenlied.pl', [], []),
+    songsDiff('examples/wiegenlied.pl', 'tests/1tone.pl', Surplus1, Surplus2),
+    length(Surplus1, Len1), Len1 > 1,
+    length(Surplus2, Len2), Len2 == 1.
+
 test(toneAtTime1, [setup(testSong), cleanup(clear),
         set(Tone == [tone{pitch:d, octave:1}, tone{pitch:bes, octave:1}])]) :-
     toneAtTime(Tone, position{bar:1, beat:2}).

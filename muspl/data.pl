@@ -87,6 +87,16 @@ clearData :-
 sameStaff(Time1, Time2) :-
     Time1.staff = Time2.staff.
 
+oneStaff(_) :-
+    mvNotation(oneStaff),
+    fail.
+oneStaff(Staff) :-
+    retract(notationDb(oneStaff, Pos1, Tone, Dur)),
+    Pos2 = Pos1.put(staff, Staff),
+    assertz(notation(Pos2, Tone, Dur)),
+    fail.
+oneStaff(_).
+
 retractRedundant :-
     findall(notation(Time, Tone, Dur), notation(Time, Tone, Dur), Notation),
     sort(Notation, NotationSorted),
@@ -142,8 +152,10 @@ sameSongs(Song1, Song2) :-
         fail).
 songsDiff(Song1, Song2, Surplus1, Surplus2) :-
     loadData(Song1),
+    oneStaff(g),  % TODO optional
     mvNotation(1),
     loadData(Song2),
+    oneStaff(g),  % TODO optional
     mvNotation(2),
     rmSameNotation,
     findall(notation(Time, Tone, Dur), notationDb(1, Time, Tone, Dur),
@@ -163,6 +175,15 @@ rmSameNotation :-
     notationDb(2, Time, Tone, Dur),
     retractall(notationDb(1, Time, Tone, Dur)),
     retractall(notationDb(2, Time, Tone, Dur)),
+    fail.
+rmSameNotation :-
+    % same pitches/durs
+    notationDb(1, Pos, Tone1, Dur1),
+    notationDb(2, Pos, Tone2, Dur2),
+    Tone1.diff(Tone2) == 0,
+    Dur1.cmp(Dur2) == =,
+    retractall(notationDb(1, Pos, Tone1, Dur1)),
+    retractall(notationDb(2, Pos, Tone2, Dur2)),
     fail.
 rmSameNotation.
 

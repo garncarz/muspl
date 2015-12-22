@@ -14,9 +14,6 @@
 :- use_module(data).
 
 process :-
-    retractall(notation(_, _, _)),
-    fail.
-process :-
     retract(m Action),
     process(Action),
     fail.
