@@ -1,5 +1,7 @@
 :- begin_tests(lilypond, [setup(clear), cleanup(clear)]).
 
+:- use_module(data).
+
 :- ['testSong.plt'].
 
 test(pitchLily) :-
@@ -39,5 +41,17 @@ test(spaceFiller, [setup(ts68), cleanup(clear)]) :-
     spaceFiller(position{bar:2, beat:2}, position{bar:4, beat:1}, Filler),
         Filler =@= (_, s, duration{len:[1, 4, 8]}),
     not(spaceFiller(position{bar:3, beat:4}, position{bar:3, beat:4}, _)).
+
+test(chordsOrder, [cleanup(clear)]) :-
+    loadData('examples/wiegenlied'),
+    oneStaff(g),
+    chords(position{bar:1, beat:1, staff:g}, Chords),
+    Chords = [
+        (position{bar:1, beat:1, staff:g},
+            [tone{octave:0, pitch:f}, tone{octave:1, pitch:f}],
+            duration{len:[4]}),
+        (position{bar:1, beat:1, staff:g},
+            [tone{octave:1, pitch:a}, tone{octave:1, pitch:c}],
+            duration{len:[8]})].
 
 :- end_tests(lilypond).

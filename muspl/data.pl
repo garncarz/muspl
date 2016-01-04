@@ -15,6 +15,7 @@
     clearData/0,
 
     sameStaff/2,
+    oneStaff/1,
 
     retractRedundant/0,
 

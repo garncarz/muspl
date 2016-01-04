@@ -30,7 +30,8 @@ chord(Start, (Start, Result, Duration), Duration) :-
 chords(Start, Chords) :-
     findall(Duration, notation(Start, _, Duration), Durs1),
     predsort(durCmp, Durs1, Durs2),
-    maplist(chord(Start), Chords, Durs2).
+    reverse(Durs2, Durs3),
+    maplist(chord(Start), Chords, Durs3).
 
 createAllChordsDb(Staff) :-
     allBeats(Staff, Beats),
@@ -186,8 +187,14 @@ itemLily(Item, CommentedItemLily) :-
 %% staffLily(+Staff, -StaffLily)
 % Renders a staff line into a complete Lilypond line.
 staffLily(Staff, String) :-
-    extra scale{root:Root, quality:IntervalPattern},
-    extra timeSignature(BeatsInBar, BeatUnit),
+    (
+        extra scale{root:Root, quality:IntervalPattern};
+        Root = c, IntervalPattern = major
+    ),
+    (
+        extra timeSignature(BeatsInBar, BeatUnit);
+        BeatsInBar = 4, BeatUnit = 4
+    ),
     (extra clef(Staff, Clef);
         Staff == 'f' -> Clef = 'bass';
         Clef = 'treble'),
