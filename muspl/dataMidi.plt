@@ -36,4 +36,27 @@ test(importMidi) :-
     assertion(Diff93 == []),
     assertion(Diff93Orig == []).
 
+test(importSongMidi) :-
+    importMidi('tests/song.midi'),
+    
+    % Verify that some notations were created
+    findall(notation(_, _, _), notation(_, _, _), Notations),
+    length(Notations, Count),
+    Count > 0,
+    
+    % Verify that the scale is set correctly
+    extra scale{root:f, quality:major},
+    
+    % Verify that time signature is set correctly
+    extra timeSignature(6, 8),
+    
+    % Test that export works (should not fail)
+    exportLy('/tmp/test_simple_export.ly'),
+    
+    % Verify at least one notation exists with proper format
+    once((notation(Pos, Tone, Dur),
+          Pos = position{bar:_, beat:_, staff:_},
+          Tone = tone{pitch:_, octave:_},
+          Dur = duration{len:_})).
+
 :- end_tests(dataMidi).

@@ -72,7 +72,7 @@ importMidi(Filename) :-
     maplist(trackToAbsBeats(TPB), Tracks, AbsTracks),
 
     clearData,
-    assertz(extra notationScale((f, major))),  % TODO generalise
+    assertz(extra scale{root:f, quality:major}),  % TODO generalise
     assertz(extra timeSignature(6, 8)),
 
     maplist(parseTones, AbsTracks, Tones),
